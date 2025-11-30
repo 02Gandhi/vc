@@ -6,6 +6,16 @@ import { COUNTRIES } from '../utils/countries';
 import api from '../services/apiService';
 import BackButton from '../components/BackButton';
 
+// Regex allowing Western European languages (English, German, French, Dutch)
+// Includes: a-z, digits, common punctuation, and accented characters (Latin-1 Supplement)
+const WESTERN_EUROPEAN_REGEX = /^[a-zA-Z0-9\s\-\.\,\@\_\!\?\+\(\)\:\"\';\/\u00C0-\u00FF\u0152\u0153\u20AC]*$/;
+
+// Regex for phone numbers (digits, spaces, +, -, parentheses)
+const PHONE_REGEX = /^[0-9\s\+\-\(\)]*$/;
+
+// Regex for pure numbers (if strictly needed)
+const NUMBER_REGEX = /^[0-9]*$/;
+
 const FormSection: React.FC<{ title: string; number: string; children: React.ReactNode; description?: string }> = ({ title, number, children, description }) => (
     <div className="bg-brand-surface p-6 rounded-lg border border-brand-border">
         <h2 className="text-xl font-bold text-brand-text-primary mb-2 flex items-center">
@@ -15,40 +25,60 @@ const FormSection: React.FC<{ title: string; number: string; children: React.Rea
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">{children}</div>
     </div>
 );
-const FormInput: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
+
+const FormInput: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string }> = ({ label, error, ...props }) => (
     <div>
         <label htmlFor={props.id} className="block text-sm font-medium text-brand-text-primary mb-1">{label}</label>
-        <input {...props} className="w-full bg-brand-background border border-brand-border rounded-md px-3 py-2 focus:ring-brand-primary focus:border-brand-primary" />
-    </div>
-);
-const FormSelect: React.FC<React.SelectHTMLAttributes<HTMLSelectElement> & { label: string; children: React.ReactNode }> = ({ label, children, ...props }) => (
-     <div>
-        <label htmlFor={props.id} className="block text-sm font-medium text-brand-text-primary mb-1">{label}</label>
-        <select {...props} className="w-full bg-brand-background border border-brand-border rounded-md px-3 py-2 focus:ring-brand-primary focus:border-brand-primary">{children}</select>
-    </div>
-);
-const FormTextarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }> = ({ label, ...props }) => (
-    <div className="md:col-span-2">
-        <label htmlFor={props.id} className="block text-sm font-medium text-brand-text-primary mb-1">{label}</label>
-        <textarea {...props} rows={4} className="w-full bg-brand-background border border-brand-border rounded-md px-3 py-2 focus:ring-brand-primary focus:border-brand-primary"></textarea>
-    </div>
-);
-const FormToggle: React.FC<{ label: string; enabled: boolean; onChange: () => void; description: string; }> = ({ label, enabled, onChange, description }) => (
-    <div>
-        <div className="flex items-center">
-             <label className="block text-sm font-medium text-brand-text-primary mr-4">{label}</label>
-            <button
-                type="button"
-                className={`${enabled ? 'bg-brand-primary' : 'bg-gray-200'} relative inline-flex h-6 w-11 items-center rounded-full`}
-                onClick={onChange}
-            >
-                <span className={`${enabled ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition`}/>
-            </button>
-        </div>
-         <p className="text-xs text-brand-text-secondary mt-1">{description}</p>
+        <input 
+            {...props} 
+            className={`w-full bg-brand-background border ${error ? 'border-brand-red focus:border-brand-red focus:ring-brand-red' : 'border-brand-border focus:ring-brand-primary focus:border-brand-primary'} rounded-md px-3 py-2 focus:outline-none focus:ring-1 transition-colors`} 
+        />
+        {error && <p className="mt-1 text-xs text-brand-red font-medium">{error}</p>}
     </div>
 );
 
+const FormSelect: React.FC<React.SelectHTMLAttributes<HTMLSelectElement> & { label: string; children: React.ReactNode; error?: string }> = ({ label, children, error, ...props }) => (
+     <div>
+        <label htmlFor={props.id} className="block text-sm font-medium text-brand-text-primary mb-1">{label}</label>
+        <select 
+            {...props} 
+            className={`w-full bg-brand-background border ${error ? 'border-brand-red focus:border-brand-red focus:ring-brand-red' : 'border-brand-border focus:ring-brand-primary focus:border-brand-primary'} rounded-md px-3 py-2 focus:outline-none focus:ring-1 transition-colors`}
+        >
+            {children}
+        </select>
+        {error && <p className="mt-1 text-xs text-brand-red font-medium">{error}</p>}
+    </div>
+);
+
+const FormTextarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string; error?: string }> = ({ label, error, ...props }) => (
+    <div className="md:col-span-2">
+        <label htmlFor={props.id} className="block text-sm font-medium text-brand-text-primary mb-1">{label}</label>
+        <textarea 
+            {...props} 
+            rows={4} 
+            className={`w-full bg-brand-background border ${error ? 'border-brand-red focus:border-brand-red focus:ring-brand-red' : 'border-brand-border focus:ring-brand-primary focus:border-brand-primary'} rounded-md px-3 py-2 focus:outline-none focus:ring-1 transition-colors`}
+        ></textarea>
+        {error && <p className="mt-1 text-xs text-brand-red font-medium">{error}</p>}
+    </div>
+);
+
+const LIMITS = {
+    companyName: 45,
+    tradingName: 80,
+    vatIdMax: 12,
+    vatIdMin: 8,
+    slogan: 100,
+    description: 300,
+    zip: 10,
+    city: 30,
+    street: 100,
+    fullName: 30,
+    role: 30,
+    phone: 30,
+    email: 50,
+    website: 100,
+    linkedin: 100
+};
 
 const ClientSignUpPage: React.FC = () => {
     const [step, setStep] = useState(1);
@@ -56,6 +86,8 @@ const ClientSignUpPage: React.FC = () => {
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
+    
     const logoFileInputRef = useRef<HTMLInputElement>(null);
     const coverFileInputRef = useRef<HTMLInputElement>(null);
     const [isUploadingLogo, setIsUploadingLogo] = useState(false);
@@ -72,7 +104,7 @@ const ClientSignUpPage: React.FC = () => {
         contactPerson: { fullName: '', role: '', phone: '', email: '', showEmailPublicly: true, showPhonePublicly: false },
         website: '',
         linkedin: '',
-        address: { street: '', zip: '', city: '', country: 'Germany' },
+        address: { street: '', zip: '', city: '', country: 'Германия' },
         operationalCountries: [],
         serviceCategories: [],
         companySize: 50,
@@ -87,13 +119,74 @@ const ClientSignUpPage: React.FC = () => {
         confirmPassword: '',
     });
     
+    const validateField = (name: string, value: string, max: number, type: 'text' | 'numeric' | 'phone' | 'email' = 'text') => {
+        let errorMessage = '';
+
+        // 1. Check Character Set
+        let isValidChar = true;
+        if (type === 'numeric') {
+            isValidChar = NUMBER_REGEX.test(value); // Strict digits only
+        } else if (type === 'phone') {
+            isValidChar = PHONE_REGEX.test(value); // Digits, +, spaces
+        } else {
+            isValidChar = WESTERN_EUROPEAN_REGEX.test(value); // Latin + accents
+        }
+
+        if (!isValidChar) {
+            errorMessage = 'Недопустимые символы';
+        }
+
+        // 2. Check Length
+        if (value.length >= max) {
+            errorMessage = 'Достигнута максимальная длина';
+        }
+
+        // 3. Email Check (Partial, implies '@' requirement)
+        if (type === 'email' && value.length > 0 && !value.includes('@') && !errorMessage) {
+            // We only show this error on blur or step transition usually, but let's keep it clean here.
+            // For now, allow typing, check @ on step transition.
+        }
+
+        setFieldErrors(prev => {
+            const newErrors = { ...prev };
+            if (errorMessage) {
+                newErrors[name] = errorMessage;
+            } else {
+                delete newErrors[name];
+            }
+            return newErrors;
+        });
+    };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
+        
+        if (name === 'companyName') validateField(name, value, LIMITS.companyName);
+        if (name === 'tradingName') validateField(name, value, LIMITS.tradingName);
+        if (name === 'slogan') validateField(name, value, LIMITS.slogan);
+        if (name === 'description') validateField(name, value, LIMITS.description);
+        if (name === 'vatId') validateField(name, value, LIMITS.vatIdMax); // VAT can be alphanumeric
+        if (name === 'website') validateField(name, value, LIMITS.website);
+        if (name === 'linkedin') validateField(name, value, LIMITS.linkedin);
+
         setProfileData(prev => ({ ...prev, [name]: value }));
     };
     
     const handleNestedChange = (section: 'address' | 'contactPerson', e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+        
+        if (section === 'address') {
+            if (name === 'zip') validateField(`address.${name}`, value, LIMITS.zip); // Zip is alphanumeric in some EU countries
+            if (name === 'city') validateField(`address.${name}`, value, LIMITS.city);
+            if (name === 'street') validateField(`address.${name}`, value, LIMITS.street);
+        }
+        if (section === 'contactPerson') {
+            if (name === 'fullName') validateField(`contactPerson.${name}`, value, LIMITS.fullName);
+            if (name === 'role') validateField(`contactPerson.${name}`, value, LIMITS.role);
+            if (name === 'phone') validateField(`contactPerson.${name}`, value, LIMITS.phone, 'phone');
+            if (name === 'email') validateField(`contactPerson.${name}`, value, LIMITS.email, 'email');
+        }
+
         setProfileData(prev => ({
             ...prev,
             [section]: {
@@ -117,7 +210,6 @@ const ClientSignUpPage: React.FC = () => {
         }
     };
 
-
     const handleAccountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setAccountData(prev => ({...prev, [name]: value}));
@@ -125,6 +217,30 @@ const ClientSignUpPage: React.FC = () => {
     
     const goToNextStep = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Final validations before next step
+        const errors: {[key: string]: string} = {};
+        
+        if (profileData.vatId && profileData.vatId.length < LIMITS.vatIdMin) {
+            errors.vatId = `Минимальная длина ${LIMITS.vatIdMin} символов`;
+        }
+        
+        if (profileData.contactPerson.email && !profileData.contactPerson.email.includes('@')) {
+            errors['contactPerson.email'] = 'E-mail должен содержать символ @';
+        }
+
+        if (Object.keys(errors).length > 0) {
+             setFieldErrors(prev => ({...prev, ...errors}));
+             return;
+        }
+
+        // Check if there are blocking "Invalid char" errors
+        const hasBlockingErrors = Object.values(fieldErrors).some(err => err === 'Недопустимые символы');
+        if (hasBlockingErrors) {
+            // Scroll to first error ideally
+            return;
+        }
+
         setAccountData(prev => ({ ...prev, email: profileData.contactPerson.email }));
         setStep(2);
     };
@@ -133,15 +249,21 @@ const ClientSignUpPage: React.FC = () => {
         e.preventDefault();
         setError('');
         if (accountData.password !== accountData.confirmPassword) {
-            setError('Passwords do not match.');
+            setError('Пароли не совпадают.');
             return;
         }
         setIsSubmitting(true);
         try {
-            await signup(UserRole.Client, profileData, { email: accountData.email });
+            // Combine Company Name and Type
+            const finalProfileData = {
+                ...profileData,
+                companyName: `${profileData.companyName} ${profileData.companyType}`.trim()
+            };
+
+            await signup(UserRole.Client, finalProfileData, { email: accountData.email });
             navigate('/client/dashboard');
         } catch (err: any) {
-            setError(err.message || 'Failed to create account. Please try again.');
+            setError(err.message || 'Не удалось создать аккаунт. Пожалуйста, попробуйте снова.');
         } finally {
             setIsSubmitting(false);
         }
@@ -150,11 +272,11 @@ const ClientSignUpPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-brand-background flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative">
              <div className="absolute top-6 left-6">
-                <BackButton className="" />
+                <BackButton className="" to="/signup" />
             </div>
             <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
                 <h1 className="text-3xl font-bold text-center text-brand-text-primary mb-2">Добро пожаловать, Заказчик!</h1>
-                <p className="text-center text-brand-text-secondary mb-8">Давайте настроим ваш профиль компании.</p>
+                <p className="text-center text-brand-text-secondary mb-8">Давайте настроим профиль вашей компании.</p>
 
                 <div className="w-full max-w-xs mx-auto mb-8">
                     <ol className="flex items-center w-full">
@@ -169,22 +291,22 @@ const ClientSignUpPage: React.FC = () => {
                 
                 {step === 1 && (
                     <form onSubmit={goToNextStep} className="space-y-8">
-                         <FormSection number="⭐" title="Брендинг и внешний вид" description="Загрузите логотип вашей компании и фото обложки для вашего профиля.">
+                         <FormSection number="⭐" title="Брендинг и внешний вид" description="Загрузите логотип и обложку компании.">
                             <div className="flex items-center space-x-6">
                                 <div className="flex-shrink-0">
                                     <label className="block text-sm font-medium text-brand-text-primary mb-1">Логотип</label>
                                     <div className="relative h-24 w-24 rounded-full bg-brand-background border border-brand-border flex items-center justify-center overflow-hidden">
-                                        {isUploadingLogo ? <p>...</p> : profileData.logoUrl ? <img src={profileData.logoUrl} alt="Logo" className="h-full w-full object-cover" /> : <span className="text-xs">Нет лого</span>}
+                                        {isUploadingLogo ? <p>...</p> : profileData.logoUrl ? <img src={profileData.logoUrl} alt="Logo" className="h-full w-full object-cover" /> : <span className="text-xs">Нет логотипа</span>}
                                     </div>
                                 </div>
                                 <div>
                                     <button type="button" onClick={() => logoFileInputRef.current?.click()} disabled={isUploadingLogo} className="bg-brand-surface border border-brand-border hover:bg-brand-background text-brand-text-secondary font-bold py-2 px-4 rounded-lg">
-                                        {isUploadingLogo ? 'Загрузка...' : 'Загрузить лого'}
+                                        {isUploadingLogo ? 'Загрузка...' : 'Загрузить логотип'}
                                     </button>
                                 </div>
                             </div>
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-brand-text-primary mb-1">Фото обложки</label>
+                                <label className="block text-sm font-medium text-brand-text-primary mb-1">Обложка</label>
                                 <div className="relative group w-full h-40 bg-brand-background rounded-lg border border-brand-border flex items-center justify-center overflow-hidden">
                                     {isUploadingCover ? <p>...</p> : profileData.coverImageUrl ? <img src={profileData.coverImageUrl} alt="Cover" className="h-full w-full object-cover" /> : <span className="text-xs">Нет обложки</span>}
                                 </div>
@@ -195,32 +317,173 @@ const ClientSignUpPage: React.FC = () => {
                         </FormSection>
                         
                         <FormSection number="A" title="Основная информация">
-                            <FormInput label="Название компании" id="companyName" name="companyName" required value={profileData.companyName} onChange={handleInputChange} />
-                            <FormInput label="Торговое название (если есть)" id="tradingName" name="tradingName" value={profileData.tradingName} onChange={handleInputChange} />
+                            <FormInput 
+                                label="Название компании" 
+                                id="companyName" 
+                                name="companyName" 
+                                required 
+                                value={profileData.companyName} 
+                                onChange={handleInputChange} 
+                                maxLength={LIMITS.companyName}
+                                error={fieldErrors.companyName}
+                            />
+                            <FormInput 
+                                label="Торговое название (если есть)" 
+                                id="tradingName" 
+                                name="tradingName" 
+                                value={profileData.tradingName} 
+                                onChange={handleInputChange} 
+                                maxLength={LIMITS.tradingName}
+                                error={fieldErrors.tradingName}
+                            />
                             <FormSelect label="Тип компании" id="companyType" name="companyType" value={profileData.companyType} onChange={handleInputChange}>
-                                <option>GmbH</option><option>AG</option><option>Sole Proprietorship</option><option>Other</option>
+                                <optgroup label="Западная Европа (DACH)">
+                                    <option value="GmbH">GmbH</option>
+                                    <option value="AG">AG</option>
+                                    <option value="Einzelunternehmen">Einzelunternehmen</option>
+                                </optgroup>
+                                <optgroup label="Восточная Европа">
+                                    <option value="Sp. z o.o.">Sp. z o.o. (Польша)</option>
+                                    <option value="s.r.o.">s.r.o. (Чехия/Словакия)</option>
+                                    <option value="d.o.o.">d.o.o. (Балканы)</option>
+                                    <option value="Kft.">Kft. (Венгрия)</option>
+                                    <option value="SRL">SRL (Румыния)</option>
+                                    <option value="OÜ">OÜ (Эстония)</option>
+                                    <option value="SIA">SIA (Латвия)</option>
+                                    <option value="UAB">UAB (Литва)</option>
+                                </optgroup>
+                                <optgroup label="Другие">
+                                    <option value="Ltd">Ltd</option>
+                                    <option value="Other">Другое</option>
+                                </optgroup>
                             </FormSelect>
-                            <FormInput label="VAT ID" id="vatId" name="vatId" value={profileData.vatId} onChange={handleInputChange} />
-                            <FormTextarea label="Слоган" id="slogan" name="slogan" value={profileData.slogan} onChange={handleInputChange} />
-                            <FormTextarea label="Описание компании" id="description" name="description" value={profileData.description} onChange={handleInputChange} />
+                            <FormInput 
+                                label="ИНН / VAT ID" 
+                                id="vatId" 
+                                name="vatId" 
+                                value={profileData.vatId} 
+                                onChange={handleInputChange} 
+                                maxLength={LIMITS.vatIdMax}
+                                error={fieldErrors.vatId}
+                                placeholder="От 8 до 12 символов"
+                            />
+                            <FormTextarea 
+                                label="Слоган" 
+                                id="slogan" 
+                                name="slogan" 
+                                value={profileData.slogan} 
+                                onChange={handleInputChange} 
+                                maxLength={LIMITS.slogan}
+                                error={fieldErrors.slogan}
+                            />
+                            <FormTextarea 
+                                label="Описание компании" 
+                                id="description" 
+                                name="description" 
+                                value={profileData.description} 
+                                onChange={handleInputChange} 
+                                maxLength={LIMITS.description}
+                                error={fieldErrors.description}
+                            />
                         </FormSection>
 
                         <FormSection number="B" title="Адрес">
-                            <FormInput label="Улица" id="street" name="street" required value={profileData.address.street} onChange={e => handleNestedChange('address', e)} />
-                            <FormInput label="Индекс" id="zip" name="zip" required value={profileData.address.zip} onChange={e => handleNestedChange('address', e)} />
-                            <FormInput label="Город" id="city" name="city" required value={profileData.address.city} onChange={e => handleNestedChange('address', e)} />
+                            <FormInput 
+                                label="Улица" 
+                                id="street" 
+                                name="street" 
+                                required 
+                                value={profileData.address.street} 
+                                onChange={e => handleNestedChange('address', e)}
+                                maxLength={LIMITS.street}
+                                error={fieldErrors['address.street']} 
+                            />
+                            <FormInput 
+                                label="Индекс" 
+                                id="zip" 
+                                name="zip" 
+                                required 
+                                value={profileData.address.zip} 
+                                onChange={e => handleNestedChange('address', e)} 
+                                maxLength={LIMITS.zip}
+                                error={fieldErrors['address.zip']}
+                            />
+                            <FormInput 
+                                label="Город" 
+                                id="city" 
+                                name="city" 
+                                required 
+                                value={profileData.address.city} 
+                                onChange={e => handleNestedChange('address', e)} 
+                                maxLength={LIMITS.city}
+                                error={fieldErrors['address.city']}
+                            />
                             <FormSelect label="Страна" id="country" name="country" value={profileData.address.country} onChange={e => handleNestedChange('address', e)} required>
                                 {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.name}</option>)}
                             </FormSelect>
                         </FormSection>
                         
                         <FormSection number="C" title="Контактные данные">
-                             <FormInput label="Полное имя контактного лица" id="fullName" name="fullName" required value={profileData.contactPerson.fullName} onChange={e => handleNestedChange('contactPerson', e)} />
-                             <FormInput label="Должность" id="role" name="role" required value={profileData.contactPerson.role} onChange={e => handleNestedChange('contactPerson', e)} />
-                             <FormInput label="Телефон" id="phone" name="phone" required value={profileData.contactPerson.phone} onChange={e => handleNestedChange('contactPerson', e)} />
-                             <FormInput label="Email" id="email" name="email" type="email" required value={profileData.contactPerson.email} onChange={e => handleNestedChange('contactPerson', e)} />
-                             <FormInput label="Веб-сайт" id="website" name="website" value={profileData.website} onChange={handleInputChange} />
-                             <FormInput label="Профиль LinkedIn" id="linkedin" name="linkedin" value={profileData.linkedin} onChange={handleInputChange} />
+                             <FormInput 
+                                label="Полное имя" 
+                                id="fullName" 
+                                name="fullName" 
+                                required 
+                                value={profileData.contactPerson.fullName} 
+                                onChange={e => handleNestedChange('contactPerson', e)} 
+                                maxLength={LIMITS.fullName}
+                                error={fieldErrors['contactPerson.fullName']}
+                            />
+                             <FormInput 
+                                label="Должность" 
+                                id="role" 
+                                name="role" 
+                                required 
+                                value={profileData.contactPerson.role} 
+                                onChange={e => handleNestedChange('contactPerson', e)} 
+                                maxLength={LIMITS.role}
+                                error={fieldErrors['contactPerson.role']}
+                            />
+                             <FormInput 
+                                label="Телефон" 
+                                id="phone" 
+                                name="phone" 
+                                required 
+                                value={profileData.contactPerson.phone} 
+                                onChange={e => handleNestedChange('contactPerson', e)} 
+                                maxLength={LIMITS.phone}
+                                error={fieldErrors['contactPerson.phone']}
+                                placeholder="+49 123 456 7890"
+                            />
+                             <FormInput 
+                                label="E-mail" 
+                                id="email" 
+                                name="email" 
+                                type="email" 
+                                required 
+                                value={profileData.contactPerson.email} 
+                                onChange={e => handleNestedChange('contactPerson', e)} 
+                                maxLength={LIMITS.email}
+                                error={fieldErrors['contactPerson.email']}
+                             />
+                             <FormInput 
+                                label="Веб-сайт" 
+                                id="website" 
+                                name="website" 
+                                value={profileData.website} 
+                                onChange={handleInputChange}
+                                maxLength={LIMITS.website}
+                                error={fieldErrors.website} 
+                            />
+                             <FormInput 
+                                label="LinkedIn профиль" 
+                                id="linkedin" 
+                                name="linkedin" 
+                                value={profileData.linkedin} 
+                                onChange={handleInputChange}
+                                maxLength={LIMITS.linkedin}
+                                error={fieldErrors.linkedin} 
+                            />
                         </FormSection>
                         
                         <input type="file" ref={logoFileInputRef} accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, 'logoUrl', setIsUploadingLogo)} />
@@ -228,7 +491,7 @@ const ClientSignUpPage: React.FC = () => {
 
 
                         <div className="flex justify-end">
-                            <button type="submit" className="bg-brand-primary hover:bg-brand-primary-hover text-white font-bold py-2 px-6 rounded-lg">Продолжить</button>
+                            <button type="submit" className="bg-brand-primary hover:bg-brand-primary-hover text-white font-bold py-2 px-6 rounded-lg">Далее</button>
                         </div>
                     </form>
                 )}
@@ -236,8 +499,8 @@ const ClientSignUpPage: React.FC = () => {
                 {step === 2 && (
                     <form onSubmit={handleFinalSubmit}>
                          <div className="bg-brand-surface p-8 rounded-lg border border-brand-border space-y-6">
-                            <h2 className="text-xl font-bold text-brand-text-primary text-center">Создайте свой аккаунт</h2>
-                            <FormInput label="Email" id="email" name="email" type="email" required value={accountData.email} onChange={handleAccountChange} />
+                            <h2 className="text-xl font-bold text-brand-text-primary text-center">Создать аккаунт</h2>
+                            <FormInput label="E-mail" id="email" name="email" type="email" required value={accountData.email} onChange={handleAccountChange} />
                             <FormInput label="Пароль" id="password" name="password" type="password" required value={accountData.password} onChange={handleAccountChange} />
                             <FormInput label="Подтвердите пароль" id="confirmPassword" name="confirmPassword" type="password" required value={accountData.confirmPassword} onChange={handleAccountChange} />
                              {error && <p className="text-brand-red text-sm text-center">{error}</p>}

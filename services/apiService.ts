@@ -1,4 +1,3 @@
-
 import { UserRole, Client, Contractor, Job, CreditPackage, Transaction, Application, CompanyProfile, ContractorProfile, JobDetails } from '../types';
 import { COUNTRIES } from '../utils/countries';
 
@@ -26,114 +25,7 @@ export const MOCK_CONTRACTOR: Contractor = {
     rating: 0,
 };
 
-const MOCK_JOBS: Job[] = [
-    {
-        id: 'job-1',
-        title: 'Bricklaying for new residential complex',
-        category: 'bricklayer',
-        budget: { type: 'range', minAmount: 28, maxAmount: 32 },
-        city: 'Berlin',
-        country: 'DE',
-        start_date: '2024-08-01',
-        duration_days: 90,
-        created_at: '2024-05-20T10:00:00Z',
-        posted_by: { id: 'client-1', company: 'West EU Construction GmbH' },
-        status: 'Active',
-        views: 124,
-        applications: 5,
-        details: {
-            projectName: 'Bricklaying for new residential complex',
-            jobType: 'bricklayer',
-            projectDescription: 'We are looking for a team of 5-10 bricklayers for a new residential building in Berlin. The project involves laying facing bricks for a 5-story building. High quality and speed are required.',
-            city: 'Berlin', country: 'Germany', startDate: '2024-08-01', endDate: '2024-10-30',
-            workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], workHoursPerWeek: '45', numberOfEmployees: 10,
-            communicationLanguage: 'немецкий', minLanguageLevel: 'B1', languageProficientEmployees: 1,
-            toolsProvided: 'yes', materialsProvided: 'yes', accommodationProvided: 'no', invoicingTerms: '30/70',
-            hourlyRateFrom: '28', hourlyRateTo: '32', preferredContractorCountry: ['Польша'],
-            photos: ['https://images.unsplash.com/photo-1559235738-d6b76a0b8a36?q=80&w=2070&auto=format&fit=crop'],
-        },
-        photos: ['https://images.unsplash.com/photo-1559235738-d6b76a0b8a36?q=80&w=2070&auto=format&fit=crop'],
-        unlockedBy: [], appliedBy: []
-    },
-    {
-        id: 'job-2',
-        title: 'Электромонтажные работы в офисном здании',
-        category: 'electrician',
-        budget: { type: 'range', minAmount: 35, maxAmount: 40 },
-        city: 'Amsterdam',
-        country: 'NL',
-        start_date: '2024-09-15',
-        duration_days: 60,
-        created_at: '2024-05-21T11:30:00Z',
-        posted_by: { id: 'client-1', company: 'West EU Construction GmbH' },
-        status: 'Active',
-        views: 88,
-        applications: 3,
-        details: {
-            projectName: 'Электромонтажные работы в офисном здании', jobType: 'electrician',
-            projectDescription: 'Full electrical installation for a new 10-floor office building in Amsterdam. Includes cabling, switchboards, lighting, and security systems. Certified specialists required.',
-            city: 'Amsterdam', country: 'Netherlands', startDate: '2024-09-15', endDate: '2024-11-14',
-            workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], workHoursPerWeek: '50', numberOfEmployees: 8,
-            communicationLanguage: 'английский', minLanguageLevel: 'B2', languageProficientEmployees: 2,
-            toolsProvided: 'yes', materialsProvided: 'yes', accommodationProvided: 'yes', invoicingTerms: '50/50',
-            hourlyRateFrom: '35', hourlyRateTo: '40', preferredContractorCountry: ['Польша', 'Румыния'],
-            photos: ['https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop'],
-        },
-        photos: ['https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop'],
-        unlockedBy: [], appliedBy: []
-    },
-    {
-        id: 'job-3',
-        title: 'Plastering and Painting Works for Villa',
-        category: 'plasterer',
-        budget: { type: 'fixed', amount: 25000 },
-        city: 'Munich',
-        country: 'DE',
-        start_date: '2024-07-20',
-        duration_days: 30,
-        created_at: '2024-05-19T09:00:00Z',
-        posted_by: { id: 'client-1', company: 'West EU Construction GmbH' },
-        status: 'Active',
-        views: 215,
-        applications: 11,
-        details: {
-            projectName: 'Plastering and Painting Works for Villa', jobType: 'plasterer',
-            projectDescription: 'Interior plastering and painting for a luxury villa. Total area approx. 400 sqm. High-quality finish is crucial.',
-            city: 'Munich', country: 'Germany', startDate: '2024-07-20', endDate: '2024-08-19',
-            workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], workHoursPerWeek: '40', numberOfEmployees: 4,
-            communicationLanguage: 'немецкий', minLanguageLevel: 'A2', languageProficientEmployees: 1,
-            toolsProvided: 'no', materialsProvided: 'yes', accommodationProvided: 'no', invoicingTerms: '50/50',
-            hourlyRateFrom: '0', hourlyRateTo: '0', preferredContractorCountry: ['Чехия'],
-            photos: ['https://images.unsplash.com/photo-1600585154340-be6164a83639?q=80&w=2070&auto=format&fit=crop'],
-        },
-        photos: ['https://images.unsplash.com/photo-1600585154340-be6164a83639?q=80&w=2070&auto=format&fit=crop'],
-        unlockedBy: [], appliedBy: []
-    },
-    {
-        id: 'job-4', title: 'Facade Insulation for Apartment Block', category: 'insulation_installer',
-        budget: { type: 'range', minAmount: 25, maxAmount: 29 }, city: 'Vienna', country: 'AT',
-        start_date: '2024-08-10', duration_days: 75, created_at: '2024-05-22T08:00:00Z',
-        posted_by: { id: 'client-1', company: 'West EU Construction GmbH' }, status: 'Active', views: 95, applications: 4,
-        details: { projectName: 'Facade Insulation', jobType: 'insulation_installer', projectDescription: 'External wall insulation system (EWIS) for a 6-story apartment building. Approximately 2500 sqm.', city: 'Vienna', country: 'Austria', startDate: '2024-08-10', endDate: '2024-10-24', workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], workHoursPerWeek: '45', numberOfEmployees: 8, communicationLanguage: 'немецкий', minLanguageLevel: 'B1', languageProficientEmployees: 2, toolsProvided: 'yes', materialsProvided: 'yes', accommodationProvided: 'no', invoicingTerms: 'Monthly', hourlyRateFrom: '25', hourlyRateTo: '29', preferredContractorCountry: ['Словакия'], photos: ['https://images.unsplash.com/photo-1579532589543-a69d4e138a2b?q=80&w=1974&auto=format&fit=crop'] },
-        photos: ['https://images.unsplash.com/photo-1579532589543-a69d4e138a2b?q=80&w=1974&auto=format&fit=crop'], unlockedBy: [], appliedBy: []
-    },
-    {
-        id: 'job-5', title: 'HVAC Installation in a Shopping Mall', category: 'hvac_engineer',
-        budget: { type: 'range', minAmount: 38, maxAmount: 45 }, city: 'Brussels', country: 'BE',
-        start_date: '2024-10-01', duration_days: 120, created_at: '2024-05-22T09:15:00Z',
-        posted_by: { id: 'client-1', company: 'West EU Construction GmbH' }, status: 'Active', views: 72, applications: 2,
-        details: { projectName: 'HVAC Installation', jobType: 'hvac_engineer', projectDescription: 'Complete HVAC system installation for a new shopping mall. Experience with large-scale commercial projects is required.', city: 'Brussels', country: 'Belgium', startDate: '2024-10-01', endDate: '2025-01-29', workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], workHoursPerWeek: '40', numberOfEmployees: 12, communicationLanguage: 'французский', minLanguageLevel: 'B2', languageProficientEmployees: 3, toolsProvided: 'yes', materialsProvided: 'no', accommodationProvided: 'yes', invoicingTerms: 'Milestone-based', hourlyRateFrom: '38', hourlyRateTo: '45', preferredContractorCountry: ['Румыния'], photos: ['https://images.unsplash.com/photo-1628321696404-a6043818129a?q=80&w=2070&auto=format&fit=crop'] },
-        photos: ['https://images.unsplash.com/photo-1628321696404-a6043818129a?q=80&w=2070&auto=format&fit=crop'], unlockedBy: [], appliedBy: []
-    },
-    {
-        id: 'job-6', title: 'Drywall Installation for Office Fit-out', category: 'drywall_fitter',
-        budget: { type: 'fixed', amount: 50000 }, city: 'Frankfurt', country: 'DE',
-        start_date: '2024-08-05', duration_days: 45, created_at: '2024-05-23T14:00:00Z',
-        posted_by: { id: 'client-1', company: 'West EU Construction GmbH' }, status: 'Active', views: 150, applications: 8,
-        details: { projectName: 'Office Fit-out', jobType: 'drywall_fitter', projectDescription: 'Installation of drywall partitions and suspended ceilings for a 2000 sqm office space.', city: 'Frankfurt', country: 'Germany', startDate: '2024-08-05', endDate: '2024-09-19', workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], workHoursPerWeek: '48', numberOfEmployees: 6, communicationLanguage: 'английский', minLanguageLevel: 'B1', languageProficientEmployees: 1, toolsProvided: 'yes', materialsProvided: 'yes', accommodationProvided: 'no', invoicingTerms: '30/40/30', hourlyRateFrom: '0', hourlyRateTo: '0', preferredContractorCountry: ['Польша', 'Литва'], photos: ['https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop'] },
-        photos: ['https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop'], unlockedBy: [], appliedBy: []
-    },
-];
+const MOCK_JOBS: Job[] = [];
 
 
 const MOCK_APPLICATIONS: Application[] = [];
@@ -141,8 +33,8 @@ const MOCK_APPLICATIONS: Application[] = [];
 const MOCK_COMPANY_PROFILES: { [key: string]: CompanyProfile } = {
     'client-1': {
         id: 'client-1', companyName: 'West EU Construction GmbH', companyType: 'GmbH', vatId: 'DE123456789',
-        description: 'Leading construction company in Germany specializing in large residential and commercial projects.',
-        slogan: 'Building the Future, Today.',
+        description: 'Führendes Bauunternehmen in Deutschland, spezialisiert auf große Wohn- und Gewerbeprojekte.',
+        slogan: 'Wir bauen die Zukunft, heute.',
         contactPerson: { fullName: 'John Doe', role: 'Project Manager', phone: '+49 123 4567890', email: 'j.doe@west-eu.com', showEmailPublicly: true, showPhonePublicly: false },
         address: { street: 'Musterstraße 1', zip: '10115', city: 'Berlin', country: 'Germany' },
         operationalCountries: ['Germany', 'Netherlands', 'Austria'], serviceCategories: ['Residential Construction', 'Commercial Buildings'],
@@ -154,8 +46,8 @@ const MOCK_COMPANY_PROFILES: { [key: string]: CompanyProfile } = {
 const MOCK_CONTRACTOR_PROFILES: { [key: string]: ContractorProfile } = {
     'contractor-1': {
         id: 'contractor-1', companyName: 'Ivan Petrov Construction', companyType: 'Sole Proprietor',
-        description: 'A team of highly skilled builders from Poland, specializing in bricklaying and general construction.',
-        slogan: 'Quality craftsmanship, delivered on time.',
+        description: 'Ein Team von hochqualifizierten Bauarbeitern aus Polen, spezialisiert auf Maurerarbeiten und allgemeinen Bau.',
+        slogan: 'Qualitätshandwerk, pünktlich geliefert.',
         contactPerson: { fullName: 'Ivan Petrov', role: 'Owner', phone: '+48 987 654 321', email: 'ivan.p@contractor.pl', showEmailPublicly: false, showPhonePublicly: false },
         address: { street: 'Kwiatowa 5', zip: '00-001', city: 'Warsaw', country: 'Poland' },
         team: { companySize: 10 }, serviceCategories: ['Bricklaying', 'Masonry', 'General Construction'], portfolio: [],
@@ -282,12 +174,12 @@ const api = {
     unlockJobContact: (jobId: string, contractor: Contractor): Promise<{ updatedJob: Job, updatedContractor: Contractor }> => new Promise((resolve, reject) => {
         setTimeout(() => {
             if (contractor.balance_credits < UNLOCK_COST) {
-                return reject(new Error('Not enough credits.'));
+                return reject(new Error('Nicht genügend Credits.'));
             }
 
             const job = MOCK_JOBS.find(j => j.id === jobId);
             if (!job) {
-                return reject(new Error('Job not found.'));
+                return reject(new Error('Auftrag nicht gefunden.'));
             }
 
             if (!job.unlockedBy) {
@@ -311,7 +203,7 @@ const api = {
             const newTransaction: Transaction = {
                 id: `tx-${Date.now()}`,
                 date: new Date().toISOString().split('T')[0],
-                description: `Unlock Contact: ${job.title.substring(0,20)}...`,
+                description: `Kontaktfreischaltung: ${job.title.substring(0,20)}...`,
                 amount: -UNLOCK_COST,
                 status: 'Completed'
             };
@@ -331,7 +223,7 @@ const api = {
         setTimeout(() => {
             const job = MOCK_JOBS.find(j => j.id === jobId);
             if (!job) {
-                return reject(new Error('Job not found.'));
+                return reject(new Error('Auftrag nicht gefunden.'));
             }
 
             if (!job.appliedBy) {
@@ -339,7 +231,7 @@ const api = {
             }
 
             if (job.appliedBy.includes(contractorId)) {
-                return reject(new Error('You have already applied for this job.'));
+                return reject(new Error('Sie haben sich bereits für diesen Auftrag beworben.'));
             }
 
             job.appliedBy.push(contractorId);
@@ -373,9 +265,17 @@ const api = {
         setTimeout(() => resolve(), 100);
     }),
 
+    incrementJobView: (jobId: string): Promise<void> => new Promise(resolve => {
+        const job = MOCK_JOBS.find(j => j.id === jobId);
+        if (job) {
+            job.views += 1;
+        }
+        setTimeout(() => resolve(), 100);
+    }),
+
     signUpClient: (profileData: CompanyProfile, accountData: {email: string}): Promise<Client> => new Promise((resolve, reject) => {
         if (MOCK_USERS_DB.some(u => u.email === accountData.email)) {
-            return reject(new Error('User with this email already exists.'));
+            return reject(new Error('Benutzer mit dieser E-Mail existiert bereits.'));
         }
         
         const newClientId = `client-${Date.now()}`;
@@ -402,7 +302,7 @@ const api = {
 
     signUpContractor: (profileData: ContractorProfile, accountData: {email: string}): Promise<Contractor> => new Promise((resolve, reject) => {
          if (MOCK_USERS_DB.some(u => u.email === accountData.email)) {
-            return reject(new Error('User with this email already exists.'));
+            return reject(new Error('Benutzer mit dieser E-Mail existiert bereits.'));
         }
 
         const newContractorId = `contractor-${Date.now()}`;

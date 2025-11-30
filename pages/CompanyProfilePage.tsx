@@ -91,7 +91,7 @@ const CompanyProfilePage: React.FC = () => {
 
     const validateAndSetError = (name: string, value: string) => {
         if (value && !LATIN_REGEX.test(value)) {
-            setErrors(prev => ({ ...prev, [name]: 'Invalid characters' }));
+            setErrors(prev => ({ ...prev, [name]: 'Недопустимые символы' }));
         } else {
             setErrors(prev => {
                 const newErrors = { ...prev };
@@ -178,7 +178,7 @@ const CompanyProfilePage: React.FC = () => {
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header />
                     <main className="flex-1 overflow-x-hidden overflow-y-auto bg-brand-background p-6 flex items-center justify-center">
-                        <p>Loading your company profile...</p>
+                        <p>Загрузка профиля...</p>
                     </main>
                 </div>
             </div>
@@ -186,7 +186,7 @@ const CompanyProfilePage: React.FC = () => {
     }
 
     if (!profile) {
-        return <div>Could not load profile.</div>
+        return <div>Не удалось загрузить профиль.</div>
     }
 
     return (
@@ -199,15 +199,15 @@ const CompanyProfilePage: React.FC = () => {
                         <form onSubmit={(e) => e.preventDefault()}>
                             <div className="flex justify-between items-center mb-6">
                                 <div>
-                                    <h1 className="text-3xl font-bold text-brand-text-primary">Company Profile</h1>
-                                    <p className="text-brand-text-secondary">This is how contractors will see you. Keep it up-to-date.</p>
+                                    <h1 className="text-3xl font-bold text-brand-text-primary">Профиль компании</h1>
+                                    <p className="text-brand-text-secondary">Так видят вашу компанию подрядчики. Держите информацию актуальной.</p>
                                 </div>
                                 <div className="flex items-center space-x-4">
                                      <button 
                                         type="button" 
                                         onClick={handleViewProfile}
                                         className="bg-brand-surface border border-brand-border hover:bg-brand-background text-brand-text-secondary font-bold py-2 px-6 rounded-lg">
-                                        View Public Profile
+                                        Просмотр публичного профиля
                                     </button>
                                     <button
                                         type="button"
@@ -217,38 +217,38 @@ const CompanyProfilePage: React.FC = () => {
                                             saveStatus === 'success' ? 'bg-brand-green' : 'bg-brand-primary hover:bg-brand-primary-hover'
                                         } text-white`}
                                     >
-                                        {saveStatus === 'saving' && 'Saving...'}
-                                        {saveStatus === 'success' && 'Saved!'}
-                                        {saveStatus === 'idle' && 'Save Changes'}
-                                        {saveStatus === 'error' && 'Error!'}
+                                        {saveStatus === 'saving' && 'Сохранение...'}
+                                        {saveStatus === 'success' && 'Сохранено!'}
+                                        {saveStatus === 'idle' && 'Сохранить изменения'}
+                                        {saveStatus === 'error' && 'Ошибка!'}
                                     </button>
                                 </div>
                             </div>
                             
                             <div className="space-y-8">
-                                <FormSection number="⭐" title="Branding & Appearance" description="Upload your company logo and a cover photo for your profile.">
+                                <FormSection number="⭐" title="Брендинг и внешний вид" description="Загрузите логотип и обложку компании.">
                                     <div className="flex items-center space-x-6">
                                         <div className="flex-shrink-0">
-                                            <label className="block text-sm font-medium text-brand-text-primary mb-1">Company Logo</label>
+                                            <label className="block text-sm font-medium text-brand-text-primary mb-1">Логотип</label>
                                             <div className="relative h-24 w-24 rounded-full bg-brand-background border border-brand-border flex items-center justify-center overflow-hidden">
                                                 {isUploadingLogo ? (
                                                     <svg className="animate-spin h-8 w-8 text-brand-text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                                 ) : profile.logoUrl ? (
                                                     <img src={profile.logoUrl} alt="Company Profile" className="h-full w-full object-cover" />
                                                 ) : (
-                                                    <span className="text-brand-text-secondary text-xs text-center">No Logo</span>
+                                                    <span className="text-brand-text-secondary text-xs text-center">Нет логотипа</span>
                                                 )}
                                             </div>
                                         </div>
                                         <div>
                                             <button type="button" onClick={() => logoFileInputRef.current?.click()} disabled={isUploadingLogo} className="bg-brand-surface border border-brand-border hover:bg-brand-background text-brand-text-secondary font-bold py-2 px-4 rounded-lg">
-                                                {isUploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                                                {isUploadingLogo ? 'Загрузка...' : 'Загрузить логотип'}
                                             </button>
-                                            <p className="text-xs text-brand-text-secondary mt-2">Recommended: 200x200px</p>
+                                            <p className="text-xs text-brand-text-secondary mt-2">Рекомендуемый размер: 200x200px</p>
                                         </div>
                                     </div>
                                      <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-brand-text-primary mb-1">Cover Photo</label>
+                                        <label className="block text-sm font-medium text-brand-text-primary mb-1">Обложка</label>
                                         <div className="relative group w-full h-40 bg-brand-background rounded-lg border border-brand-border flex items-center justify-center overflow-hidden">
                                             {isUploadingCover ? (
                                                 <svg className="animate-spin h-8 w-8 text-brand-text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -259,43 +259,43 @@ const CompanyProfilePage: React.FC = () => {
                                             )}
                                         </div>
                                          <button type="button" onClick={() => coverFileInputRef.current?.click()} className="mt-2 bg-brand-surface border border-brand-border hover:bg-brand-background text-brand-text-secondary font-bold py-2 px-4 rounded-lg">
-                                            {isUploadingCover ? 'Uploading...' : 'Upload Cover'}
+                                            {isUploadingCover ? 'Загрузка...' : 'Загрузить обложку'}
                                         </button>
-                                        <p className="text-xs text-brand-text-secondary mt-2">Recommended: 1200x300px</p>
+                                        <p className="text-xs text-brand-text-secondary mt-2">Рекомендуемый размер: 1200x300px</p>
                                     </div>
                                 </FormSection>
-                                <FormSection number="A" title="Basic Information">
-                                    <FormInput label="Company Name" id="companyName" name="companyName" value={profile.companyName} onChange={handleInputChange} required error={errors.companyName} />
-                                    <FormInput label="Trading Name (optional)" id="tradingName" name="tradingName" value={profile.tradingName || ''} onChange={handleInputChange} error={errors.tradingName} />
-                                     <FormSelect label="Company Type" id="companyType" name="companyType" value={profile.companyType} onChange={handleInputChange}>
+                                <FormSection number="A" title="Основная информация">
+                                    <FormInput label="Название компании" id="companyName" name="companyName" value={profile.companyName} onChange={handleInputChange} required error={errors.companyName} />
+                                    <FormInput label="Торговое название (опционально)" id="tradingName" name="tradingName" value={profile.tradingName || ''} onChange={handleInputChange} error={errors.tradingName} />
+                                     <FormSelect label="Тип компании" id="companyType" name="companyType" value={profile.companyType} onChange={handleInputChange}>
                                         <option>GmbH</option>
                                         <option>AG</option>
                                         <option>Sole Proprietorship</option>
                                         <option>Other</option>
                                     </FormSelect>
-                                    <FormInput label="VAT ID" id="vatId" name="vatId" value={profile.vatId || ''} onChange={handleInputChange} error={errors.vatId}/>
-                                    <FormTextarea label="Slogan (one-liner)" id="slogan" name="slogan" value={profile.slogan || ''} onChange={handleInputChange} maxLength={100} error={errors.slogan} />
-                                    <FormTextarea label="Company Description" id="description" name="description" value={profile.description || ''} onChange={handleInputChange} maxLength={1000} error={errors.description} />
+                                    <FormInput label="ИНН / VAT ID" id="vatId" name="vatId" value={profile.vatId || ''} onChange={handleInputChange} error={errors.vatId}/>
+                                    <FormTextarea label="Слоган" id="slogan" name="slogan" value={profile.slogan || ''} onChange={handleInputChange} maxLength={100} error={errors.slogan} />
+                                    <FormTextarea label="Описание компании" id="description" name="description" value={profile.description || ''} onChange={handleInputChange} maxLength={1000} error={errors.description} />
                                 </FormSection>
-                                 <FormSection number="B" title="Location & Address">
-                                    <FormInput label="Street Address" id="street" name="street" value={profile.address.street} onChange={e => handleNestedInputChange('address', e)} required error={errors['address.street']} />
-                                    <FormInput label="ZIP / Postal Code" id="zip" name="zip" value={profile.address.zip} onChange={e => handleNestedInputChange('address', e)} required error={errors['address.zip']} />
-                                    <FormInput label="City" id="city" name="city" value={profile.address.city} onChange={e => handleNestedInputChange('address', e)} required error={errors['address.city']} />
-                                    <FormSelect label="Country" id="country" name="country" value={profile.address.country} onChange={e => handleNestedInputChange('address', e)} required>
-                                        <option value="" disabled>Select your country</option>
+                                 <FormSection number="B" title="Адрес">
+                                    <FormInput label="Улица" id="street" name="street" value={profile.address.street} onChange={e => handleNestedInputChange('address', e)} required error={errors['address.street']} />
+                                    <FormInput label="Индекс" id="zip" name="zip" value={profile.address.zip} onChange={e => handleNestedInputChange('address', e)} required error={errors['address.zip']} />
+                                    <FormInput label="Город" id="city" name="city" value={profile.address.city} onChange={e => handleNestedInputChange('address', e)} required error={errors['address.city']} />
+                                    <FormSelect label="Страна" id="country" name="country" value={profile.address.country} onChange={e => handleNestedInputChange('address', e)} required>
+                                        <option value="" disabled>Выберите страну</option>
                                         {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.name}</option>)}
                                     </FormSelect>
                                 </FormSection>
 
-                                <FormSection number="C" title="Contact Details" description="Control what contact information is visible on your public profile.">
-                                     <FormInput label="Contact Person Full Name" id="fullName" name="fullName" value={profile.contactPerson.fullName} onChange={e => handleNestedInputChange('contactPerson', e)} required error={errors['contactPerson.fullName']} />
-                                     <FormInput label="Role" id="role" name="role" value={profile.contactPerson.role} onChange={e => handleNestedInputChange('contactPerson', e)} error={errors['contactPerson.role']}/>
-                                     <FormInput label="Phone" id="phone" name="phone" value={profile.contactPerson.phone} onChange={e => handleNestedInputChange('contactPerson', e)} required error={errors['contactPerson.phone']}/>
-                                     <FormInput label="Email" id="email" name="email" value={profile.contactPerson.email} onChange={e => handleNestedInputChange('contactPerson', e)} required type="email" error={errors['contactPerson.email']}/>
-                                     <FormToggle label="Show Email Publicly" enabled={profile.contactPerson.showEmailPublicly} onChange={() => setProfile({...profile, contactPerson: {...profile.contactPerson, showEmailPublicly: !profile.contactPerson.showEmailPublicly}})} description="Allows contractors to see your email address before they unlock it." />
-                                     <FormToggle label="Show Phone Publicly" enabled={profile.contactPerson.showPhonePublicly} onChange={() => setProfile({...profile, contactPerson: {...profile.contactPerson, showPhonePublicly: !profile.contactPerson.showPhonePublicly}})} description="Allows contractors to see your phone number before they unlock it." />
-                                     <FormInput label="Website URL" id="website" name="website" value={profile.website || ''} onChange={handleInputChange} type="url" error={errors.website} />
-                                     <FormInput label="LinkedIn Profile URL" id="linkedin" name="linkedin" value={profile.linkedin || ''} onChange={handleInputChange} type="url" error={errors.linkedin}/>
+                                <FormSection number="C" title="Контактные данные" description="Укажите, какие контакты будут видны в публичном профиле.">
+                                     <FormInput label="Полное имя" id="fullName" name="fullName" value={profile.contactPerson.fullName} onChange={e => handleNestedInputChange('contactPerson', e)} required error={errors['contactPerson.fullName']} />
+                                     <FormInput label="Должность" id="role" name="role" value={profile.contactPerson.role} onChange={e => handleNestedInputChange('contactPerson', e)} error={errors['contactPerson.role']}/>
+                                     <FormInput label="Телефон" id="phone" name="phone" value={profile.contactPerson.phone} onChange={e => handleNestedInputChange('contactPerson', e)} required error={errors['contactPerson.phone']}/>
+                                     <FormInput label="E-mail" id="email" name="email" value={profile.contactPerson.email} onChange={e => handleNestedInputChange('contactPerson', e)} required type="email" error={errors['contactPerson.email']}/>
+                                     <FormToggle label="Показывать E-mail публично" enabled={profile.contactPerson.showEmailPublicly} onChange={() => setProfile({...profile, contactPerson: {...profile.contactPerson, showEmailPublicly: !profile.contactPerson.showEmailPublicly}})} description="Разрешить подрядчикам видеть ваш email до открытия контактов." />
+                                     <FormToggle label="Показывать телефон публично" enabled={profile.contactPerson.showPhonePublicly} onChange={() => setProfile({...profile, contactPerson: {...profile.contactPerson, showPhonePublicly: !profile.contactPerson.showPhonePublicly}})} description="Разрешить подрядчикам видеть ваш телефон до открытия контактов." />
+                                     <FormInput label="Веб-сайт" id="website" name="website" value={profile.website || ''} onChange={handleInputChange} type="url" error={errors.website} />
+                                     <FormInput label="LinkedIn профиль" id="linkedin" name="linkedin" value={profile.linkedin || ''} onChange={handleInputChange} type="url" error={errors.linkedin}/>
                                 </FormSection>
 
                                 <input type="file" ref={logoFileInputRef} accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, 'logoUrl', setIsUploadingLogo)} />

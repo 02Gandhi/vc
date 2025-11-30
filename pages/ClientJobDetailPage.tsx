@@ -9,8 +9,8 @@ import ImageLightbox from '../components/ImageLightbox';
 import BackButton from '../components/BackButton';
 
 const countryCodeToName: { [key: string]: string } = {
-    'DE': 'Germany', 'NL': 'Netherlands', 'AT': 'Austria', 'BE': 'Belgium', 
-    'LU': 'Luxembourg', 'FR': 'France', 'CH': 'Switzerland', 'PL': 'Poland'
+    'DE': 'Германия', 'NL': 'Нидерланды', 'AT': 'Австрия', 'BE': 'Бельгия', 
+    'LU': 'Люксембург', 'FR': 'Франция', 'CH': 'Швейцария', 'PL': 'Польша'
 };
 
 const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string | number }> = ({ icon, label, value }) => (
@@ -41,7 +41,7 @@ const DetailListItem: React.FC<{ label: string, value?: string | number | boolea
     } else if (Array.isArray(value)) {
         displayValue = value.join(', ');
     } else {
-        displayValue = value || 'N/A';
+        displayValue = value || 'Не указано';
     }
     
     return (
@@ -68,7 +68,7 @@ const ApplicationCard: React.FC<{ application: Application }> = ({ application }
                             </div>
                         </div>
                         <button className="bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold py-2 px-4 rounded-md text-sm">
-                            Contact
+                            Связаться
                         </button>
                     </div>
                     <p className="mt-3 text-brand-text-primary bg-brand-background p-3 rounded-md">{message}</p>
@@ -123,11 +123,11 @@ const ClientJobDetailPage: React.FC = () => {
         setIsDeleting(true);
         try {
             await api.deleteJob(job.id);
-            alert('Order deleted successfully.');
+            alert('Заказ успешно удален.');
             navigate('/client/orders');
         } catch (error) {
             console.error("Failed to delete job:", error);
-            alert('Failed to delete the order. Please try again.');
+            alert('Не удалось удалить заказ. Пожалуйста, попробуйте снова.');
         } finally {
             setIsDeleting(false);
             setIsDeleteModalOpen(false);
@@ -137,16 +137,16 @@ const ClientJobDetailPage: React.FC = () => {
 
 
     if (loading) {
-        return <div className="flex items-center justify-center h-screen bg-brand-background text-brand-text-primary">Loading order details...</div>;
+        return <div className="flex items-center justify-center h-screen bg-brand-background text-brand-text-primary">Загрузка деталей заказа...</div>;
     }
 
     if (!job) {
-        return <div className="flex items-center justify-center h-screen bg-brand-background text-brand-text-primary">Order not found.</div>;
+        return <div className="flex items-center justify-center h-screen bg-brand-background text-brand-text-primary">Заказ не найден.</div>;
     }
 
     const budgetText = job.budget.type === 'fixed' 
         ? `€${job.budget.amount?.toLocaleString()}` 
-        : `€${job.budget.minAmount} - €${job.budget.maxAmount} / hour`;
+        : `€${job.budget.minAmount} - €${job.budget.maxAmount} / час`;
 
     return (
         <div className="flex h-screen bg-brand-background text-brand-text-primary">
@@ -155,68 +155,68 @@ const ClientJobDetailPage: React.FC = () => {
                 <Header />
                 <main className="flex-1 overflow-x-hidden overflow-y-auto bg-brand-background p-6">
                     <div className="container mx-auto">
-                        <BackButton />
+                        <BackButton to="/client/orders" />
                         <div className="mb-6">
                             <p className="text-sm text-brand-text-secondary">
-                                <Link to="/client/orders" className="hover:text-brand-text-primary">My Orders</Link> / {job.title}
+                                <Link to="/client/orders" className="hover:text-brand-text-primary">Мои заказы</Link> / {job.title}
                             </p>
                             <h1 className="text-4xl font-bold text-brand-text-primary mt-2">{job.title}</h1>
                             <p className="text-brand-text-secondary mt-2">
-                                📍 {job.city}, {countryCodeToName[job.country] || job.country} • Status: <span className="text-brand-primary font-semibold">{job.status}</span>
+                                📍 {job.city}, {countryCodeToName[job.country] || job.country} • Статус: <span className="text-brand-primary font-semibold">{job.status}</span>
                             </p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                             <InfoCard 
                                 icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>} 
-                                label="Budget" 
+                                label="Бюджет" 
                                 value={budgetText} 
                             />
                              <InfoCard 
                                 icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>}
-                                label="Duration" 
-                                value={`${job.duration_days} days`}
+                                label="Длительность" 
+                                value={`${job.duration_days} дн.`}
                             />
                             <InfoCard 
                                 icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
-                                label="Views"
+                                label="Просмотры"
                                 value={job.views}
                             />
                             <InfoCard 
                                 icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}
-                                label="Applications" 
+                                label="Заявки" 
                                 value={job.applications}
                             />
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             <div className="lg:col-span-2">
-                                <DetailSection title="Project Description">
+                                <DetailSection title="Описание проекта">
                                     <p className="whitespace-pre-line">{job.details.projectDescription}</p>
                                      {job.details.additionalComments && <p className="whitespace-pre-line mt-4 p-4 bg-brand-background rounded-lg border-l-4 border-brand-primary">{job.details.additionalComments}</p>}
                                 </DetailSection>
                                 
-                                <DetailSection title="Workforce Requirements">
+                                <DetailSection title="Требования к персоналу">
                                     <div className="space-y-2">
                                         <DetailListItem label="Количество сотрудников" value={job.details.numberOfEmployees} />
                                         <DetailListItem label="Язык общения" value={job.details.communicationLanguage === 'other' ? job.details.otherLanguage : job.details.communicationLanguage} />
                                         <DetailListItem label="Минимальный уровень языка" value={job.details.minLanguageLevel} />
-                                        <DetailListItem label="Сотрудников со знанием языка" value={job.details.languageProficientEmployees} />
-                                        <DetailListItem label="Предпочитаемая страна подрядчика" value={job.details.preferredContractorCountry} />
+                                        <DetailListItem label="Сотрудники со знанием языка" value={job.details.languageProficientEmployees} />
+                                        <DetailListItem label="Предпочтительные страны" value={job.details.preferredContractorCountry} />
                                     </div>
                                 </DetailSection>
 
-                                <DetailSection title="Conditions & Terms">
+                                <DetailSection title="Условия и ресурсы">
                                     <div className="space-y-2">
                                         <DetailListItem label="Рабочие дни" value={job.details.workDays} />
                                         <DetailListItem label="Часов в неделю" value={job.details.workHoursPerWeek} />
-                                        <DetailListItem label="Инструмент" value={job.details.toolsProvided} />
-                                        <DetailListItem label="Жильё" value={job.details.accommodationProvided} />
+                                        <DetailListItem label="Инструменты" value={job.details.toolsProvided} />
+                                        <DetailListItem label="Проживание" value={job.details.accommodationProvided} />
                                         <DetailListItem label="Условия оплаты" value={job.details.invoicingTerms} />
                                     </div>
                                 </DetailSection>
 
-                                <DetailSection title="Project Gallery">
+                                <DetailSection title="Галерея проекта">
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                         {job.photos.map((photo, index) => (
                                              <div key={index} className="cursor-pointer group overflow-hidden rounded-lg" onClick={() => openLightbox(index)}>
@@ -230,17 +230,17 @@ const ClientJobDetailPage: React.FC = () => {
                                     </div>
                                 </DetailSection>
 
-                                <DetailSection title="Applications">
+                                <DetailSection title="Заявки">
                                     {applications.length > 0 ? (
                                         <div className="space-y-4">
                                             {applications.map(app => <ApplicationCard key={app.id} application={app} />)}
                                         </div>
                                     ) : (
-                                        <p className="text-brand-text-secondary">No applications received yet.</p>
+                                        <p className="text-brand-text-secondary">Пока нет заявок.</p>
                                     )}
                                 </DetailSection>
 
-                                <DetailSection title="Contacts Unlocked By">
+                                <DetailSection title="Контакты открыты">
                                     {job.unlockedBy && job.unlockedBy.length > 0 ? (
                                         <div className="space-y-4">
                                             {job.unlockedBy.map(unlock => (
@@ -255,17 +255,17 @@ const ClientJobDetailPage: React.FC = () => {
                                                         )}
                                                         <div>
                                                             <p className="font-semibold text-brand-text-primary">{unlock.contractorName}</p>
-                                                            <p className="text-sm text-brand-text-secondary">Unlocked on: {new Date(unlock.unlockedAt).toLocaleDateString()}</p>
+                                                            <p className="text-sm text-brand-text-secondary">Открыто: {new Date(unlock.unlockedAt).toLocaleDateString()}</p>
                                                         </div>
                                                     </div>
                                                     <Link to={`/contractor/profile/${unlock.contractorId}`} className="bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold py-2 px-4 rounded-md text-sm">
-                                                        View Profile
+                                                        Профиль
                                                     </Link>
                                                 </div>
                                             ))}
                                         </div>
                                     ) : (
-                                        <p className="text-brand-text-secondary">No contractors have unlocked contact details for this project yet.</p>
+                                        <p className="text-brand-text-secondary">Ни один подрядчик еще не открыл контактные данные.</p>
                                     )}
                                 </DetailSection>
 
@@ -273,13 +273,13 @@ const ClientJobDetailPage: React.FC = () => {
 
                             <div className="lg:col-span-1">
                                 <div className="bg-brand-surface p-6 rounded-lg sticky top-24 border border-brand-border">
-                                    <h3 className="text-lg font-semibold text-brand-text-primary mb-4">Manage Order</h3>
+                                    <h3 className="text-lg font-semibold text-brand-text-primary mb-4">Управление заказом</h3>
                                     <div className="space-y-3">
                                         <button 
                                             onClick={() => setIsDeleteModalOpen(true)}
                                             className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
                                         >
-                                            Delete Order
+                                            Удалить заказ
                                         </button>
                                     </div>
                                 </div>
@@ -298,8 +298,8 @@ const ClientJobDetailPage: React.FC = () => {
                  {isDeleteModalOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
                         <div className="bg-brand-surface p-8 rounded-lg max-w-md w-full mx-4">
-                            <h3 className="text-xl font-bold text-brand-text-primary">Confirm Deletion</h3>
-                            <p className="mt-4 text-brand-text-secondary">Вы точно хотите удалить заказ? Кредиты за этот заказ не будут возвращены.</p>
+                            <h3 className="text-xl font-bold text-brand-text-primary">Подтверждение удаления</h3>
+                            <p className="mt-4 text-brand-text-secondary">Вы уверены, что хотите удалить этот заказ? Кредиты не возвращаются.</p>
                             <div className="mt-6 flex items-center">
                                 <input
                                     type="checkbox"
@@ -309,7 +309,7 @@ const ClientJobDetailPage: React.FC = () => {
                                     className="h-4 w-4 text-brand-primary bg-brand-background border-brand-border rounded focus:ring-brand-primary"
                                 />
                                 <label htmlFor="confirm-delete" className="ml-2 text-sm text-brand-text-primary">
-                                    Я ознакомился с данным условием.
+                                    Я подтверждаю это действие.
                                 </label>
                             </div>
                             <div className="mt-6 flex justify-end space-x-4">
@@ -320,14 +320,14 @@ const ClientJobDetailPage: React.FC = () => {
                                     }}
                                     className="bg-brand-background hover:bg-gray-100 border border-brand-border text-brand-text-secondary font-bold py-2 px-4 rounded-lg"
                                 >
-                                    Cancel
+                                    Отмена
                                 </button>
                                 <button
                                     onClick={handleDeleteJob}
                                     disabled={!isDeleteConfirmed || isDeleting}
                                     className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {isDeleting ? 'Deleting...' : 'Confirm Deletion'}
+                                    {isDeleting ? 'Удаление...' : 'Подтвердить удаление'}
                                 </button>
                             </div>
                         </div>

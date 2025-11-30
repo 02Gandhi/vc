@@ -22,7 +22,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         if (value && !LATIN_REGEX.test(value)) {
-            setEmailError('Недопустимые знаки');
+            setEmailError('Недопустимые символы');
         } else {
             setEmailError('');
         }
@@ -48,7 +48,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
             const path = role === UserRole.Client ? '/client/dashboard' : '/contractor/dashboard';
             navigate(path);
         } else {
-            setError('Неверные учетные данные. Используйте "client@test.com" или "contractor@test.com".');
+            setError('Неверные данные. Используйте "client@test.com" или "contractor@test.com".');
         }
     };
 
@@ -64,15 +64,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
                     </button>
                 </div>
                 
-                <h2 className="text-2xl font-bold text-center text-brand-text-primary mb-2">Войдите в свой аккаунт</h2>
+                <h2 className="text-2xl font-bold text-center text-brand-text-primary mb-2">Войти в аккаунт</h2>
                 <p className="text-center text-sm text-brand-text-secondary mb-4">
                     Или{' '}
                     <Link to="/signup" onClick={onClose} className="font-medium text-brand-primary hover:text-brand-primary-hover">
-                        создайте новый аккаунт
+                        создать новый аккаунт
                     </Link>
                 </p>
                  <p className="text-center text-xs text-brand-text-secondary mb-6">
-                    (Подсказка: используйте `client@test.com` или `contractor@test.com`)
+                    (Примечание: используйте `client@test.com` или `contractor@test.com`)
                 </p>
 
                 <form className="space-y-6" onSubmit={handleLogin}>

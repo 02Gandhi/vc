@@ -1,5 +1,5 @@
 {
   "name": "Subportal - European Construction Marketplace",
-  "description": "A B2B platform connecting Western European clients with Eastern European contractors for construction projects. Clients post jobs, and contractors purchase contact details using a credit-based system to bid on projects.",
+  "description": "B2B-платформа, соединяющая западноевропейских заказчиков с восточноевропейскими подрядчиками для строительных проектов. Заказчики публикуют проекты, а подрядчики приобретают контакты через систему кредитов для подачи предложений.",
   "requestFramePermissions": []
 }

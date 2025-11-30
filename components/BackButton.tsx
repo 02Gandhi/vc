@@ -1,11 +1,26 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const BackButton: React.FC<{ className?: string }> = ({ className = "mb-6" }) => {
+interface BackButtonProps {
+    className?: string;
+    to?: string;
+}
+
+const BackButton: React.FC<BackButtonProps> = ({ className = "mb-6", to }) => {
     const navigate = useNavigate();
+
+    const handleClick = () => {
+        if (to) {
+            navigate(to);
+        } else {
+            navigate(-1);
+        }
+    };
+
     return (
         <button 
-            onClick={() => navigate(-1)} 
+            type="button"
+            onClick={handleClick} 
             className={`inline-flex items-center text-brand-text-secondary hover:text-brand-text-primary transition-colors ${className}`}
         >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

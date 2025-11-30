@@ -35,7 +35,7 @@ const Header: React.FC = () => {
                                             <path d="M8.433 7.418c.158-.103.358-.168.567-.168h1.39l-1.157-3.24a.5.5 0 01.14-.543l1.612-1.285a.5.5 0 01.627 0l1.612 1.285a.5.5 0 01.14.543L11.03 7.25h1.39a.64.64 0 01.567.168.63.63 0 01.22.504l-.3 1.637a.5.5 0 01-.5.44H8.756a.5.5 0 01-.5-.44l-.3-1.637a.63.63 0 01.22-.504z" />
                                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0 2a10 10 0 100-20 10 10 0 000 20z" clipRule="evenodd" />
                                         </svg>
-                                        {userCredits} Credits
+                                        {userCredits} Кредитов
                                     </Link>
                                 ) : (
                                     <Link to="/client/payments" className="text-sm font-medium text-brand-text-primary bg-brand-background px-3 py-2 rounded-md hover:bg-gray-200 flex items-center">
@@ -43,7 +43,7 @@ const Header: React.FC = () => {
                                             <path d="M8.433 7.418c.158-.103.358-.168.567-.168h1.39l-1.157-3.24a.5.5 0 01.14-.543l1.612-1.285a.5.5 0 01.627 0l1.612 1.285a.5.5 0 01.14.543L11.03 7.25h1.39a.64.64 0 01.567.168.63.63 0 01.22.504l-.3 1.637a.5.5 0 01-.5.44H8.756a.5.5 0 01-.5-.44l-.3-1.637a.63.63 0 01.22-.504z" />
                                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0 2a10 10 0 100-20 10 10 0 000 20z" clipRule="evenodd" />
                                         </svg>
-                                        {userCredits} Credits
+                                        {userCredits} Кредитов
                                     </Link>
                                 )}
                                 <div className="relative">
@@ -56,9 +56,9 @@ const Header: React.FC = () => {
                                     </button>
                                     {dropdownOpen && (
                                         <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-brand-surface ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-                                            <Link to="/dashboard" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-brand-text-primary hover:bg-brand-background">Dashboard</Link>
+                                            <Link to="/dashboard" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-brand-text-primary hover:bg-brand-background">Панель управления</Link>
                                             <button onClick={handleLogout} className="w-full text-left block px-4 py-2 text-sm text-brand-text-primary hover:bg-brand-background">
-                                                Log Out
+                                                Выйти
                                             </button>
                                         </div>
                                     )}

@@ -19,7 +19,7 @@ const LoginPage: React.FC = () => {
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         if (value && !LATIN_REGEX.test(value)) {
-            setEmailError('Недопустимые знаки');
+            setEmailError('Недопустимые символы');
         } else {
             setEmailError('');
         }
@@ -33,35 +33,35 @@ const LoginPage: React.FC = () => {
 
         if (email.includes('contractor')) {
             login(UserRole.Contractor);
-            navigate('/contractor/dashboard');
+            navigate('/');
         } else if (email.includes('client')) {
             login(UserRole.Client);
             navigate('/client/dashboard');
         } else {
-            setError('Неверные учетные данные. Используйте "client@test.com" или "contractor@test.com".');
+            setError('Неверные данные. Используйте "client@test.com" или "contractor@test.com".');
         }
     };
 
     return (
         <div className="min-h-screen bg-brand-background flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative">
             <div className="absolute top-6 left-6">
-                <BackButton className="" />
+                <BackButton className="" to="/" />
             </div>
             <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
                  <div className="flex items-center justify-center">
                     <img src={LOGO_URL} alt="Subportal Logo" className="h-12 w-auto" />
                 </div>
                 <h2 className="mt-6 text-center text-3xl font-extrabold text-brand-text-primary">
-                    Войдите в свой аккаунт
+                    Войти в аккаунт
                 </h2>
                 <p className="mt-2 text-center text-sm text-brand-text-secondary">
                     Или{' '}
                     <Link to="/signup" className="font-medium text-brand-primary hover:text-brand-primary-hover">
-                        создайте новый аккаунт
+                        создать новый аккаунт
                     </Link>
                 </p>
                  <p className="mt-2 text-center text-xs text-brand-text-secondary">
-                    (Подсказка: используйте `client@test.com` или `contractor@test.com`)
+                    (Примечание: используйте `client@test.com` или `contractor@test.com`)
                 </p>
             </div>
 

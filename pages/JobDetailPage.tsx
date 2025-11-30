@@ -9,8 +9,8 @@ import ImageLightbox from '../components/ImageLightbox';
 import BackButton from '../components/BackButton';
 
 const countryCodeToName: { [key: string]: string } = {
-    'DE': 'Germany', 'NL': 'Netherlands', 'AT': 'Austria', 'BE': 'Belgium',
-    'LU': 'Luxembourg', 'FR': 'France', 'CH': 'Switzerland', 'PL': 'Poland'
+    'DE': 'Германия', 'NL': 'Нидерланды', 'AT': 'Австрия', 'BE': 'Бельгия',
+    'LU': 'Люксембург', 'FR': 'Франция', 'CH': 'Швейцария', 'PL': 'Польша'
 };
 
 const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string | number }> = ({ icon, label, value }) => (
@@ -86,16 +86,17 @@ const JobDetailPage: React.FC = () => {
                     const fetchedJob = await api.fetchJobById(id);
                     if (fetchedJob) {
                         setJob(fetchedJob);
+                        api.incrementJobView(fetchedJob.id); // Increment view as this is a contractor viewing
                         if (fetchedJob.unlockedBy?.some(u => u.contractorId === user?.id)) {
                              const client = await api.fetchCompanyProfile(fetchedJob.posted_by.id);
                              setClientProfile(client || null);
                         }
                     } else {
-                        setError("Job not found.");
+                        setError("Заказ не найден.");
                     }
                 } catch (err) {
                     console.error("Failed to load job", err);
-                    setError("Failed to load job details.");
+                    setError("Не удалось загрузить детали заказа.");
                 } finally {
                     setLoading(false);
                 }
@@ -120,7 +121,7 @@ const JobDetailPage: React.FC = () => {
             const client = await api.fetchCompanyProfile(updatedJob.posted_by.id);
             setClientProfile(client || null);
         } catch (err: any) {
-            setError(err.message || 'Failed to unlock contact.');
+            setError(err.message || 'Не удалось открыть контакты.');
         } finally {
             setIsUnlocking(false);
         }
@@ -137,14 +138,14 @@ const JobDetailPage: React.FC = () => {
             setIsApplyModalOpen(false);
             setApplicationMessage('');
         } catch (err: any) {
-            setError(err.message || 'Failed to submit application.');
+            setError(err.message || 'Не удалось отправить заявку.');
         } finally {
             setIsApplying(false);
         }
     };
 
     if (loading) {
-        return <div className="flex items-center justify-center h-screen bg-brand-background text-brand-text-primary">Loading job details...</div>;
+        return <div className="flex items-center justify-center h-screen bg-brand-background text-brand-text-primary">Загрузка деталей заказа...</div>;
     }
 
     if (error && !job) {
@@ -152,12 +153,12 @@ const JobDetailPage: React.FC = () => {
     }
     
     if (!job) {
-        return <div className="flex items-center justify-center h-screen bg-brand-background text-brand-text-primary">Job not found.</div>;
+        return <div className="flex items-center justify-center h-screen bg-brand-background text-brand-text-primary">Заказ не найден.</div>;
     }
 
     const budgetText = job.budget.type === 'fixed' 
         ? `€${job.budget.amount?.toLocaleString()}` 
-        : `€${job.budget.minAmount} - €${job.budget.maxAmount} / hour`;
+        : `€${job.budget.minAmount} - €${job.budget.maxAmount} / час`;
         
     return (
         <div className="flex h-screen bg-brand-background text-brand-text-primary">
@@ -169,66 +170,69 @@ const JobDetailPage: React.FC = () => {
                         <BackButton />
                         <div className="mb-6">
                              <p className="text-sm text-brand-text-secondary">
-                                <Link to="/contractor/dashboard" className="hover:text-brand-text-primary">All Jobs</Link> / {job.title}
+                                <Link to="/" className="hover:text-brand-text-primary">Все заказы</Link> / {job.title}
                             </p>
                             <h1 className="text-4xl font-bold text-brand-text-primary mt-2">{job.title}</h1>
                              <p className="text-brand-text-secondary mt-2">
-                                📍 {job.city}, {countryCodeToName[job.country] || job.country} • Posted by: <Link to={`/company/${job.posted_by.id}`} className="font-semibold text-brand-primary hover:underline">{job.posted_by.company}</Link>
+                                📍 {job.city}, {countryCodeToName[job.country] || job.country} 
+                                {isUnlocked && (
+                                    <> • Опубликовано: <Link to={`/company/${job.posted_by.id}`} className="font-semibold text-brand-primary hover:underline">{job.posted_by.company}</Link></>
+                                )}
                             </p>
                         </div>
 
                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                            <InfoCard 
                                 icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>} 
-                                label="Budget" 
+                                label="Бюджет" 
                                 value={budgetText} 
                             />
                              <InfoCard 
                                 icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>}
-                                label="Duration" 
-                                value={`${job.duration_days} days`}
+                                label="Длительность" 
+                                value={`${job.duration_days} дн.`}
                             />
                              <InfoCard 
                                 icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
-                                label="Views"
+                                label="Просмотры"
                                 value={job.views}
                             />
                              <InfoCard 
                                 icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}
-                                label="Applications" 
+                                label="Заявки" 
                                 value={job.applications}
                             />
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                              <div className="lg:col-span-2">
-                                <DetailSection title="Project Description">
+                                <DetailSection title="Описание проекта">
                                     <p className="whitespace-pre-line">{job.details.projectDescription}</p>
                                      {job.details.additionalComments && <p className="whitespace-pre-line mt-4 p-4 bg-brand-background rounded-lg border-l-4 border-brand-primary">{job.details.additionalComments}</p>}
                                 </DetailSection>
 
-                                 <DetailSection title="Workforce Requirements">
+                                 <DetailSection title="Требования к персоналу">
                                     <div className="space-y-2">
                                         <DetailListItem label="Количество сотрудников" value={job.details.numberOfEmployees} />
                                         <DetailListItem label="Язык общения" value={job.details.communicationLanguage === 'other' ? job.details.otherLanguage : job.details.communicationLanguage} />
                                         <DetailListItem label="Минимальный уровень языка" value={job.details.minLanguageLevel} />
-                                        <DetailListItem label="Сотрудников со знанием языка" value={job.details.languageProficientEmployees} />
-                                        <DetailListItem label="Предпочитаемая страна подрядчика" value={job.details.preferredContractorCountry} />
+                                        <DetailListItem label="Сотрудники со знанием языка" value={job.details.languageProficientEmployees} />
+                                        <DetailListItem label="Предпочтительные страны" value={job.details.preferredContractorCountry} />
                                     </div>
                                 </DetailSection>
 
-                                <DetailSection title="Conditions & Terms">
+                                <DetailSection title="Условия и ресурсы">
                                     <div className="space-y-2">
                                         <DetailListItem label="Рабочие дни" value={job.details.workDays} />
                                         <DetailListItem label="Часов в неделю" value={job.details.workHoursPerWeek} />
-                                        <DetailListItem label="Инструмент" value={job.details.toolsProvided} />
+                                        <DetailListItem label="Инструменты" value={job.details.toolsProvided} />
                                         <DetailListItem label="Материалы" value={job.details.materialsProvided} />
-                                        <DetailListItem label="Жильё" value={job.details.accommodationProvided} />
+                                        <DetailListItem label="Проживание" value={job.details.accommodationProvided} />
                                         <DetailListItem label="Условия оплаты" value={job.details.invoicingTerms} />
                                     </div>
                                 </DetailSection>
 
-                                 <DetailSection title="Project Gallery">
+                                 <DetailSection title="Галерея проекта">
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                         {job.photos.map((photo, index) => (
                                              <div key={index} className="cursor-pointer group overflow-hidden rounded-lg" onClick={() => openLightbox(index)}>
@@ -244,19 +248,19 @@ const JobDetailPage: React.FC = () => {
                             </div>
                             <div className="lg:col-span-1">
                                 <div className="bg-brand-surface p-6 rounded-lg sticky top-24 border border-brand-border">
-                                    <h3 className="text-lg font-semibold text-brand-text-primary mb-4">Actions</h3>
+                                    <h3 className="text-lg font-semibold text-brand-text-primary mb-4">Действия</h3>
                                      {isUnlocked ? (
                                         <div className="bg-brand-background p-4 rounded-lg border border-brand-border mb-4">
-                                            <h4 className="font-bold text-brand-text-primary">Contact Information Unlocked</h4>
+                                            <h4 className="font-bold text-brand-text-primary">Контактные данные открыты</h4>
                                              {clientProfile ? (
                                                 <div className="text-sm mt-2 space-y-1">
-                                                    <p><span className="font-semibold">Name:</span> {clientProfile.contactPerson.fullName}</p>
-                                                    <p><span className="font-semibold">Role:</span> {clientProfile.contactPerson.role}</p>
-                                                    <p><span className="font-semibold">Email:</span> <a href={`mailto:${clientProfile.contactPerson.email}`} className="text-brand-primary hover:underline">{clientProfile.contactPerson.email}</a></p>
-                                                    <p><span className="font-semibold">Phone:</span> {clientProfile.contactPerson.phone}</p>
+                                                    <p><span className="font-semibold">Имя:</span> {clientProfile.contactPerson.fullName}</p>
+                                                    <p><span className="font-semibold">Должность:</span> {clientProfile.contactPerson.role}</p>
+                                                    <p><span className="font-semibold">E-mail:</span> <a href={`mailto:${clientProfile.contactPerson.email}`} className="text-brand-primary hover:underline">{clientProfile.contactPerson.email}</a></p>
+                                                    <p><span className="font-semibold">Телефон:</span> {clientProfile.contactPerson.phone}</p>
                                                 </div>
                                             ) : (
-                                                <p className="text-sm mt-2">Loading contact details...</p>
+                                                <p className="text-sm mt-2">Загрузка контактов...</p>
                                             )}
                                         </div>
                                     ) : (
@@ -264,7 +268,7 @@ const JobDetailPage: React.FC = () => {
                                             onClick={handleUnlockContact} 
                                             disabled={isUnlocking}
                                             className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white font-bold py-3 px-4 rounded-lg disabled:opacity-50">
-                                            {isUnlocking ? 'Unlocking...' : 'Unlock Contact (10 credits)'}
+                                            {isUnlocking ? 'Открываю...' : 'Открыть контакты (10 Кредитов)'}
                                         </button>
                                     )}
 
@@ -272,9 +276,9 @@ const JobDetailPage: React.FC = () => {
                                         onClick={() => setIsApplyModalOpen(true)}
                                         disabled={!isUnlocked || hasApplied}
                                         className="w-full mt-4 bg-brand-green hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                                        {hasApplied ? 'Already Applied' : 'Apply for this Job'}
+                                        {hasApplied ? 'Заявка отправлена' : 'Отправить заявку'}
                                     </button>
-                                    {!isUnlocked && <p className="text-xs text-brand-text-secondary mt-2 text-center">You must unlock contact details before applying.</p>}
+                                    {!isUnlocked && <p className="text-xs text-brand-text-secondary mt-2 text-center">Вы должны открыть контакты, чтобы отправить заявку.</p>}
                                     {error && <p className="text-brand-red text-sm mt-4">{error}</p>}
                                 </div>
                             </div>
@@ -292,13 +296,13 @@ const JobDetailPage: React.FC = () => {
                 {isApplyModalOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
                         <div className="bg-brand-surface p-8 rounded-lg max-w-lg w-full mx-4">
-                            <h3 className="text-xl font-bold text-brand-text-primary">Submit Application</h3>
-                            <p className="mt-2 text-brand-text-secondary">Write a short message to the client.</p>
+                            <h3 className="text-xl font-bold text-brand-text-primary">Отправить заявку</h3>
+                            <p className="mt-2 text-brand-text-secondary">Напишите короткое сообщение заказчику.</p>
                             <form onSubmit={handleApply} className="mt-6">
                                 <textarea
                                     value={applicationMessage}
                                     onChange={(e) => setApplicationMessage(e.target.value)}
-                                    placeholder="Introduce yourself and your team..."
+                                    placeholder="Представьтесь и расскажите о своей команде..."
                                     rows={5}
                                     required
                                     className="w-full bg-brand-background border border-brand-border rounded-md px-3 py-2 focus:ring-brand-primary focus:border-brand-primary"
@@ -310,14 +314,14 @@ const JobDetailPage: React.FC = () => {
                                         className="bg-brand-background hover:bg-gray-100 border border-brand-border text-brand-text-secondary font-bold py-2 px-4 rounded-lg"
                                         disabled={isApplying}
                                     >
-                                        Cancel
+                                        Отмена
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={isApplying}
                                         className="bg-brand-primary hover:bg-brand-primary-hover text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        {isApplying ? 'Submitting...' : 'Submit Application'}
+                                        {isApplying ? 'Отправка...' : 'Отправить'}
                                     </button>
                                 </div>
                             </form>

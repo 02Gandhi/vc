@@ -49,7 +49,7 @@ const ContractorSignUpPage: React.FC = () => {
 
     const [profileData, setProfileData] = useState<ContractorProfile>({
         id: '', companyName: '', tradingName: '', companyType: 'Sole Proprietor', vatId: '', slogan: '', description: '',
-        address: { street: '', zip: '', city: '', country: 'Poland' },
+        address: { street: '', zip: '', city: '', country: 'Польша' },
         contactPerson: { fullName: '', role: 'Owner', phone: '', email: '', showEmailPublicly: false, showPhonePublicly: false },
         website: '', socials: { linkedin: '' }, portfolio: [], coverImageUrl: '', logoUrl: '', serviceCategories: [],
         team: { companySize: 1 }, skills: [], languages: [], experienceYears: 0, rating: 0, views: 0,
@@ -103,7 +103,7 @@ const ContractorSignUpPage: React.FC = () => {
         setUploadingPortfolioIndex(itemIndex);
         const files = Array.from(e.target.files);
         try {
-            const urls = await Promise.all(files.map(file => api.mockUploadImage(file)));
+            const urls = await Promise.all(files.map((file: File) => api.mockUploadImage(file)));
             const updatedPortfolio = [...profileData.portfolio];
             updatedPortfolio[itemIndex].images.push(...urls);
             setProfileData(p => ({ ...p, portfolio: updatedPortfolio }));
@@ -126,14 +126,14 @@ const ContractorSignUpPage: React.FC = () => {
         e.preventDefault();
         setError('');
         if (accountData.password !== accountData.confirmPassword) {
-            setError('Passwords do not match.'); return;
+            setError('Пароли не совпадают.'); return;
         }
         setIsSubmitting(true);
         try {
             await signup(UserRole.Contractor, profileData, { email: accountData.email });
-            navigate('/contractor/dashboard');
+            navigate('/');
         } catch (err: any) {
-            setError(err.message || 'Failed to create account.');
+            setError(err.message || 'Не удалось создать аккаунт.');
         } finally {
             setIsSubmitting(false);
         }
@@ -142,7 +142,7 @@ const ContractorSignUpPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-brand-background flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative">
             <div className="absolute top-6 left-6">
-                <BackButton className="" />
+                <BackButton className="" to="/signup" />
             </div>
             <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
                 <h1 className="text-3xl font-bold text-center text-brand-text-primary mb-2">Добро пожаловать, Подрядчик!</h1>
@@ -158,14 +158,42 @@ const ContractorSignUpPage: React.FC = () => {
                         </li>
                     </ol>
                 </div>
-
+                
                 {step === 1 && (
                     <form onSubmit={goToNextStep} className="space-y-8">
+                         <FormSection number="⭐" title="Брендинг и внешний вид" description="Загрузите логотип и обложку.">
+                            <div className="flex items-center space-x-6">
+                                <div className="flex-shrink-0">
+                                    <label className="block text-sm font-medium text-brand-text-primary mb-1">Логотип</label>
+                                    <div className="relative h-24 w-24 rounded-full bg-brand-background border border-brand-border flex items-center justify-center overflow-hidden">
+                                        {isUploadingLogo ? <p>...</p> : profileData.logoUrl ? <img src={profileData.logoUrl} alt="Logo" className="h-full w-full object-cover" /> : <span className="text-xs">Нет логотипа</span>}
+                                    </div>
+                                </div>
+                                <div>
+                                    <button type="button" onClick={() => logoFileInputRef.current?.click()} disabled={isUploadingLogo} className="bg-brand-surface border border-brand-border hover:bg-brand-background text-brand-text-secondary font-bold py-2 px-4 rounded-lg">
+                                        {isUploadingLogo ? 'Загрузка...' : 'Загрузить логотип'}
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-brand-text-primary mb-1">Обложка</label>
+                                <div className="relative group w-full h-40 bg-brand-background rounded-lg border border-brand-border flex items-center justify-center overflow-hidden">
+                                    {isUploadingCover ? <p>...</p> : profileData.coverImageUrl ? <img src={profileData.coverImageUrl} alt="Cover" className="h-full w-full object-cover" /> : <span className="text-xs">Нет обложки</span>}
+                                </div>
+                                <button type="button" onClick={() => coverFileInputRef.current?.click()} className="mt-2 bg-brand-surface border border-brand-border hover:bg-brand-background text-brand-text-secondary font-bold py-2 px-4 rounded-lg">
+                                    {isUploadingCover ? 'Загрузка...' : 'Загрузить обложку'}
+                                </button>
+                            </div>
+                        </FormSection>
+                        
                         <FormSection number="A" title="Основная информация">
-                            <FormInput label="Название компании / ФИО" id="companyName" name="companyName" required value={profileData.companyName} onChange={handleInputChange} />
+                            <FormInput label="Название компании" id="companyName" name="companyName" required value={profileData.companyName} onChange={handleInputChange} />
+                            <FormInput label="Торговое название (если есть)" id="tradingName" name="tradingName" value={profileData.tradingName} onChange={handleInputChange} />
                             <FormSelect label="Тип компании" id="companyType" name="companyType" value={profileData.companyType} onChange={handleInputChange}>
-                                <option>Sole Proprietor</option><option>Partnership</option><option>LLC</option><option>Other</option>
+                                <option>ИП</option><option>Партнерство</option><option>ООО</option><option>Другое</option>
                             </FormSelect>
+                            <FormInput label="ИНН / VAT ID" id="vatId" name="vatId" value={profileData.vatId} onChange={handleInputChange} />
+                            <FormTextarea label="Слоган" id="slogan" name="slogan" value={profileData.slogan} onChange={handleInputChange} />
                             <FormTextarea label="Описание" id="description" name="description" value={profileData.description} onChange={handleInputChange} />
                         </FormSection>
 
@@ -179,36 +207,39 @@ const ContractorSignUpPage: React.FC = () => {
                         </FormSection>
                         
                         <FormSection number="C" title="Контактные данные">
-                             <FormInput label="Полное имя контактного лица" id="fullName" name="fullName" required value={profileData.contactPerson.fullName} onChange={e => handleNestedChange('contactPerson', e)} />
+                             <FormInput label="Полное имя" id="fullName" name="fullName" required value={profileData.contactPerson.fullName} onChange={e => handleNestedChange('contactPerson', e)} />
                              <FormInput label="Должность" id="role" name="role" required value={profileData.contactPerson.role} onChange={e => handleNestedChange('contactPerson', e)} />
                              <FormInput label="Телефон" id="phone" name="phone" required value={profileData.contactPerson.phone} onChange={e => handleNestedChange('contactPerson', e)} />
-                             <FormInput label="Email" id="email" name="email" type="email" required value={profileData.contactPerson.email} onChange={e => handleNestedChange('contactPerson', e)} />
+                             <FormInput label="E-mail" id="email" name="email" type="email" required value={profileData.contactPerson.email} onChange={e => handleNestedChange('contactPerson', e)} />
+                             <FormInput label="Веб-сайт" id="website" name="website" value={profileData.website} onChange={handleInputChange} />
+                             <FormInput label="LinkedIn профиль" id="linkedin" name="linkedin" value={profileData.socials?.linkedin} onChange={handleInputChange} />
                         </FormSection>
-                         <div className="bg-brand-surface p-6 rounded-lg border border-brand-border">
-                            <h2 className="text-xl font-bold text-brand-text-primary mb-4">Портфолио</h2>
+
+                        <div className="bg-brand-surface p-6 rounded-lg border border-brand-border">
+                            <h2 className="text-xl font-bold text-brand-text-primary mb-4">G. Портфолио</h2>
                             <div className="space-y-6">
                                 {profileData.portfolio.map((item, index) => (
                                     <div key={item.id} className="bg-brand-background p-4 rounded-lg border border-brand-border relative">
-                                        <button type="button" onClick={() => removePortfolioItem(index)} className="absolute top-2 right-2 text-red-500 hover:text-red-400 font-bold text-2xl leading-none">&times;</button>
+                                        <button type="button" onClick={() => removePortfolioItem(index)} className="absolute top-2 right-2 text-red-500 font-bold">&times;</button>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <FormInput label="Название проекта" value={item.title} onChange={e => handlePortfolioChange(index, 'title', e.target.value)} />
-                                            <FormInput label="Местоположение" value={item.location} onChange={e => handlePortfolioChange(index, 'location', e.target.value)} />
+                                            <FormInput label="Название проекта" value={item.title} onChange={e => handlePortfolioChange(index, 'title', e.target.value)} id={`p-title-${index}`}/>
+                                            <FormInput label="Местоположение" value={item.location} onChange={e => handlePortfolioChange(index, 'location', e.target.value)} id={`p-loc-${index}`}/>
                                             <div className="md:col-span-2">
-                                                <label className="block text-sm font-medium text-brand-text-primary mb-1">Описание</label>
-                                                <textarea value={item.description} onChange={e => handlePortfolioChange(index, 'description', e.target.value)} rows={3} className="w-full bg-brand-surface border border-brand-border rounded-md px-3 py-2"></textarea>
+                                                 <label className="block text-sm font-medium text-brand-text-primary mb-1">Описание</label>
+                                                 <textarea value={item.description} onChange={e => handlePortfolioChange(index, 'description', e.target.value)} className="w-full bg-brand-surface border border-brand-border rounded-md px-3 py-2"></textarea>
                                             </div>
-                                             <div className="md:col-span-2">
-                                                <label className="block text-sm font-medium text-brand-text-primary mb-2">Фото (до 5)</label>
-                                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                                                    {item.images.map((img, imgIndex) => (
-                                                        <div key={imgIndex} className="relative group">
-                                                            <img src={img} alt={`Portfolio ${imgIndex + 1}`} className="rounded-lg object-cover aspect-video" />
-                                                            <button type="button" onClick={() => removePortfolioPhoto(index, imgIndex)} className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full p-1 opacity-0 group-hover:opacity-100">&#x2715;</button>
+                                            <div className="md:col-span-2">
+                                                <label className="block text-sm font-medium text-brand-text-primary mb-2">Фото (макс 5)</label>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {item.images.map((img, imgIdx) => (
+                                                        <div key={imgIdx} className="relative h-20 w-32">
+                                                            <img src={img} alt="Project" className="h-full w-full object-cover rounded-md" />
+                                                            <button type="button" onClick={() => removePortfolioPhoto(index, imgIdx)} className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs">x</button>
                                                         </div>
                                                     ))}
                                                     {item.images.length < 5 && (
-                                                        <button type="button" onClick={() => { if (portfolioFileInputRef.current) { portfolioFileInputRef.current.onchange = (e) => handlePortfolioPhotoUpload(e as any, index); portfolioFileInputRef.current.click(); } }} disabled={uploadingPortfolioIndex === index} className="border-2 border-dashed ...">
-                                                            {uploadingPortfolioIndex === index ? 'Загрузка...' : '+'}
+                                                        <button type="button" onClick={() => { if(portfolioFileInputRef.current) { portfolioFileInputRef.current.onchange = (e) => handlePortfolioPhotoUpload(e as any, index); portfolioFileInputRef.current.click(); } }} disabled={uploadingPortfolioIndex === index} className="h-20 w-32 border-2 border-dashed border-brand-border rounded-md flex items-center justify-center text-sm text-brand-text-secondary">
+                                                            {uploadingPortfolioIndex === index ? '...' : '+ Добавить'}
                                                         </button>
                                                     )}
                                                 </div>
@@ -216,15 +247,18 @@ const ContractorSignUpPage: React.FC = () => {
                                         </div>
                                     </div>
                                 ))}
+                                {profileData.portfolio.length < 3 && (
+                                    <button type="button" onClick={addPortfolioItem} className="w-full py-2 border border-brand-border rounded-lg text-brand-text-secondary hover:bg-brand-background font-bold">+ Добавить проект в портфолио</button>
+                                )}
                             </div>
-                            <button type="button" onClick={addPortfolioItem} disabled={profileData.portfolio.length >= 3} className="mt-4 bg-brand-background hover:bg-gray-100 border ...">
-                                + Добавить проект в портфолио ({profileData.portfolio.length}/3)
-                            </button>
                         </div>
-                        <input type="file" ref={portfolioFileInputRef} multiple accept="image/*" className="hidden" />
+                        
+                        <input type="file" ref={logoFileInputRef} accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, 'logoUrl', setIsUploadingLogo)} />
+                        <input type="file" ref={coverFileInputRef} accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, 'coverImageUrl', setIsUploadingCover)} />
+                        <input type="file" ref={portfolioFileInputRef} accept="image/*" className="hidden" />
 
                         <div className="flex justify-end">
-                            <button type="submit" className="bg-brand-primary hover:bg-brand-primary-hover text-white font-bold py-2 px-6 rounded-lg">Продолжить</button>
+                            <button type="submit" className="bg-brand-primary hover:bg-brand-primary-hover text-white font-bold py-2 px-6 rounded-lg">Далее</button>
                         </div>
                     </form>
                 )}
@@ -232,8 +266,8 @@ const ContractorSignUpPage: React.FC = () => {
                 {step === 2 && (
                     <form onSubmit={handleFinalSubmit}>
                          <div className="bg-brand-surface p-8 rounded-lg border border-brand-border space-y-6">
-                            <h2 className="text-xl font-bold text-brand-text-primary text-center">Создайте свой аккаунт</h2>
-                            <FormInput label="Email" id="email" name="email" type="email" required value={accountData.email} onChange={handleAccountChange} />
+                            <h2 className="text-xl font-bold text-brand-text-primary text-center">Создать аккаунт</h2>
+                            <FormInput label="E-mail" id="email" name="email" type="email" required value={accountData.email} onChange={handleAccountChange} />
                             <FormInput label="Пароль" id="password" name="password" type="password" required value={accountData.password} onChange={handleAccountChange} />
                             <FormInput label="Подтвердите пароль" id="confirmPassword" name="confirmPassword" type="password" required value={accountData.confirmPassword} onChange={handleAccountChange} />
                              {error && <p className="text-brand-red text-sm text-center">{error}</p>}

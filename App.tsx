@@ -1,9 +1,9 @@
+
 import React from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import PublicJobListPage from './pages/PublicJobListPage';
 import SignUpPage from './pages/SignUpPage';
-import ContractorDashboardPage from './pages/ContractorDashboardPage';
 import ClientDashboardPage from './pages/ClientDashboardPage';
 import JobDetailPage from './pages/JobDetailPage';
 import CreditStorePage from './pages/CreditStorePage';
@@ -41,8 +41,9 @@ const DashboardRedirect: React.FC = () => {
     if (user.role === UserRole.Client) {
         return <Navigate to="/client/dashboard" />;
     }
+    // Contractors should be on the main page, so redirect to /
     if (user.role === UserRole.Contractor) {
-        return <Navigate to="/contractor/dashboard" />;
+        return <Navigate to="/" />;
     }
     return <Navigate to="/" />;
 };
@@ -61,10 +62,7 @@ const AppContent: React.FC = () => {
             
             <Route path="/dashboard" element={<DashboardRedirect />} />
             
-            <Route 
-                path="/contractor/dashboard" 
-                element={<PrivateRoute role={UserRole.Contractor}><ContractorDashboardPage /></PrivateRoute>} 
-            />
+            {/* Contractor Routes */}
             <Route 
                 path="/jobs/:id" 
                 element={<PrivateRoute role={UserRole.Contractor}><JobDetailPage /></PrivateRoute>} 
@@ -85,11 +83,12 @@ const AppContent: React.FC = () => {
                 path="/contractor/profile/:contractorId" 
                 element={<PublicContractorProfilePage />} 
             />
+            
+            {/* Client Routes */}
             <Route 
                 path="/company/:clientId" 
                 element={<PublicCompanyProfilePage />} 
             />
-
             <Route 
                 path="/client/dashboard" 
                 element={<PrivateRoute role={UserRole.Client}><ClientDashboardPage /></PrivateRoute>} 
