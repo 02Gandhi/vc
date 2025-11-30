@@ -1,3 +1,4 @@
+
 import { UserRole, Client, Contractor, Job, CreditPackage, Transaction, Application, CompanyProfile, ContractorProfile, JobDetails } from '../types';
 import { COUNTRIES } from '../utils/countries';
 
@@ -25,7 +26,125 @@ export const MOCK_CONTRACTOR: Contractor = {
     rating: 0,
 };
 
-const MOCK_JOBS: Job[] = [];
+const MOCK_JOBS: Job[] = [
+    {
+        id: 'job-1',
+        title: 'Maurerarbeiten für Wohnkomplex',
+        category: 'bricklayer',
+        budget: { type: 'range', minAmount: 28, maxAmount: 35 },
+        city: 'Berlin',
+        country: 'DE',
+        start_date: '2023-11-15',
+        duration_days: 90,
+        created_at: '2023-10-20T10:00:00Z',
+        posted_by: { id: 'client-1', company: 'West EU Construction GmbH' },
+        status: 'Active',
+        views: 124,
+        applications: 3,
+        details: {
+            projectName: 'Wohnpark Berlin-Mitte',
+            jobType: 'bricklayer',
+            projectDescription: 'Wir suchen ein erfahrenes Team von Maurern (mindestens 6 Personen) für den Rohbau eines neuen Wohnkomplexes in Berlin. Material und Kräne werden gestellt.',
+            city: 'Berlin',
+            country: 'Deutschland',
+            startDate: '2023-11-15',
+            endDate: '2024-02-15',
+            workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            workHoursPerWeek: '40-50',
+            numberOfEmployees: 6,
+            communicationLanguage: 'German',
+            languageProficientEmployees: 1,
+            minLanguageLevel: 'A2',
+            toolsProvided: 'no',
+            materialsProvided: 'yes',
+            accommodationProvided: 'yes',
+            invoicingTerms: '14 Tage',
+            hourlyRateFrom: '28',
+            hourlyRateTo: '35',
+            preferredContractorCountry: ['Poland', 'Czech Republic'],
+            photos: ['https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop', 'https://images.unsplash.com/photo-1590644365607-1c5a38fc610c?q=80&w=2072&auto=format&fit=crop']
+        },
+        photos: ['https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop']
+    },
+    {
+        id: 'job-2',
+        title: 'Elektroinstallation Industriehalle',
+        category: 'electrician',
+        budget: { type: 'range', minAmount: 30, maxAmount: 40 },
+        city: 'München',
+        country: 'DE',
+        start_date: '2023-12-01',
+        duration_days: 45,
+        created_at: '2023-10-22T14:30:00Z',
+        posted_by: { id: 'client-1', company: 'West EU Construction GmbH' },
+        status: 'Active',
+        views: 89,
+        applications: 1,
+        details: {
+            projectName: 'Logistikzentrum München Ost',
+            jobType: 'electrician',
+            projectDescription: 'Komplette Elektroinstallation für eine neue Lagerhalle. Kabelzug, Trassenbau, Beleuchtung und Anschluss von Verteilerschränken.',
+            city: 'München',
+            country: 'Deutschland',
+            startDate: '2023-12-01',
+            endDate: '2024-01-15',
+            workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            workHoursPerWeek: '50-60',
+            numberOfEmployees: 4,
+            communicationLanguage: 'English',
+            languageProficientEmployees: 1,
+            minLanguageLevel: 'B1',
+            toolsProvided: 'unspecified',
+            materialsProvided: 'yes',
+            accommodationProvided: 'no',
+            invoicingTerms: '30 Tage',
+            hourlyRateFrom: '30',
+            hourlyRateTo: '40',
+            preferredContractorCountry: [],
+            photos: ['https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=2069&auto=format&fit=crop']
+        },
+        photos: ['https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=2069&auto=format&fit=crop']
+    },
+     {
+        id: 'job-3',
+        title: 'Trockenbau Bürogebäude',
+        category: 'drywall_fitter',
+        budget: { type: 'fixed', amount: 45000 },
+        city: 'Wien',
+        country: 'AT',
+        start_date: '2024-01-10',
+        duration_days: 60,
+        created_at: '2023-10-25T09:15:00Z',
+        posted_by: { id: 'client-1', company: 'West EU Construction GmbH' },
+        status: 'Active',
+        views: 210,
+        applications: 8,
+        details: {
+            projectName: 'Office Tower Vienna',
+            jobType: 'drywall_fitter',
+            projectDescription: 'Trockenbauarbeiten für 5 Etagen Bürofläche. Wände, Decken, Spachtelarbeiten Q3.',
+            city: 'Wien',
+            country: 'Österreich',
+            startDate: '2024-01-10',
+            endDate: '2024-03-10',
+            workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            workHoursPerWeek: '40',
+            numberOfEmployees: 8,
+            communicationLanguage: 'German',
+            languageProficientEmployees: 2,
+            minLanguageLevel: 'B2',
+            toolsProvided: 'no',
+            materialsProvided: 'yes',
+            accommodationProvided: 'yes',
+            invoicingTerms: '14 Tage',
+            hourlyRateFrom: '0',
+            hourlyRateTo: '0',
+            preferredContractorCountry: ['Slovakia', 'Hungary', 'Slovenia'],
+            photos: ['https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=2070&auto=format&fit=crop']
+        },
+        photos: ['https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=2070&auto=format&fit=crop']
+    }
+];
 
 
 const MOCK_APPLICATIONS: Application[] = [];
@@ -68,7 +187,7 @@ const UNLOCK_COST = 10;
 const JOB_POST_COST = 30;
 
 const api = {
-    fetchJobs: (): Promise<Job[]> => new Promise(resolve => setTimeout(() => resolve(MOCK_JOBS), 500)),
+    fetchJobs: (): Promise<Job[]> => new Promise(resolve => setTimeout(() => resolve([...MOCK_JOBS]), 500)),
     fetchClientJobs: (clientId: string): Promise<Job[]> => new Promise(resolve => setTimeout(() => resolve(MOCK_JOBS.filter(j => j.posted_by.id === clientId)), 500)),
     fetchJobById: (id: string): Promise<Job | undefined> => new Promise(resolve => setTimeout(() => resolve(MOCK_JOBS.find(j => j.id === id)), 500)),
     fetchJobApplications: (jobId: string): Promise<Application[]> => new Promise(resolve => setTimeout(() => resolve(MOCK_APPLICATIONS.filter(a => a.jobId === jobId)), 500)),

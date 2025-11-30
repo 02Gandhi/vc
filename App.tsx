@@ -113,6 +113,9 @@ const AppContent: React.FC = () => {
                 path="/client/payments" 
                 element={<PrivateRoute role={UserRole.Client}><ClientPaymentsPage /></PrivateRoute>} 
             />
+            
+            {/* Catch-all route to prevent white screens */}
+            <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             {isLoginModalOpen && <LoginModal onClose={closeLoginModal} />}
         </>

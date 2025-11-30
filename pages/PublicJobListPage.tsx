@@ -105,6 +105,13 @@ const JobCard: React.FC<{ job: Job; userRole?: UserRole }> = ({ job, userRole })
         ? `/jobs/${job.id}` 
         : `/jobs/public/${job.id}`;
 
+    // Safely get country for flag (fallback to DE if missing to prevent crash)
+    const countryCode = job.country ? job.country.toLowerCase() : 'de';
+    const startDate = job.start_date ? new Date(job.start_date).toLocaleDateString() : 'N/A';
+    const postedDate = job.created_at ? new Date(job.created_at).toLocaleDateString() : 'N/A';
+    const city = job.city || 'Unknown';
+    const countryName = countryCodeToName[job.country] || job.country || 'Unknown';
+
     return (
         <div className="bg-brand-surface rounded-lg border border-brand-border overflow-hidden transition-all duration-300 hover:border-brand-primary hover:shadow-lg">
             <div className="p-5">
@@ -122,24 +129,24 @@ const JobCard: React.FC<{ job: Job; userRole?: UserRole }> = ({ job, userRole })
                 <div className="space-y-2 text-sm text-brand-text-secondary">
                     <div className="flex items-center">
                         <img
-                            src={`https://flagcdn.com/w20/${job.country.toLowerCase()}.png`}
-                            alt={`${countryCodeToName[job.country] || job.country} flag`}
+                            src={`https://flagcdn.com/w20/${countryCode}.png`}
+                            alt={`${countryName} flag`}
                             className="h-4 w-auto mr-2 rounded-sm"
                         />
-                        {job.city}, {countryCodeToName[job.country] || job.country}
+                        {city}, {countryName}
                     </div>
                     <div className="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-brand-primary" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" /></svg>
-                        Дата начала: {new Date(job.start_date).toLocaleDateString()}
+                        Дата начала: {startDate}
                     </div>
                     <div className="flex items-center">
                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-brand-primary" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clipRule="evenodd" /></svg>
-                        Длительность: {job.duration_days} дн.
+                        Длительность: {job.duration_days || 0} дн.
                     </div>
                 </div>
             </div>
             <div className="bg-brand-background px-5 py-3 flex justify-between items-center text-sm border-t border-brand-border">
-                <span className="text-xs text-brand-text-secondary">Опубликовано: {new Date(job.created_at).toLocaleDateString()}</span>
+                <span className="text-xs text-brand-text-secondary">Опубликовано: {postedDate}</span>
                 <Link to={linkTo} className="bg-brand-primary hover:bg-brand-primary-hover text-white font-bold py-2 px-4 rounded-md text-sm transition-colors duration-200">
                     Посмотреть детали
                 </Link>
@@ -189,36 +196,8 @@ const Pagination: React.FC<{ currentPage: number; totalPages: number; onPageChan
     );
 };
 
-// Layout Wrappers defined outside the main component to avoid re-mounting issues
-const DashboardLayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <div className="flex h-screen bg-brand-background text-brand-text-primary">
-        <Sidebar />
-        <div className="flex-1 flex flex-col overflow-hidden">
-            <Header />
-            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-brand-background p-6">
-                <div className="container mx-auto">
-                    {children}
-                </div>
-            </main>
-        </div>
-    </div>
-);
-
-const PublicLayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <div className="flex flex-col min-h-screen bg-brand-background text-brand-text-primary">
-        <Header />
-        <div className="container mx-auto flex flex-1 px-4 py-6">
-            <PublicSidebar />
-            <main className="flex-1 lg:pl-6 w-full lg:w-auto">
-                {children}
-            </main>
-        </div>
-        <Footer />
-    </div>
-);
-
-const PublicJobListPage: React.FC = () => {
-    const { user, loading: authLoading } = useAuth();
+const JobListContent: React.FC = () => {
+    const { user } = useAuth();
     const [jobs, setJobs] = useState<Job[]>([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({
@@ -237,18 +216,20 @@ const PublicJobListPage: React.FC = () => {
     const INITIAL_JOBS_ON_FIRST_PAGE = 5;
 
     useEffect(() => {
+        let isMounted = true;
         const loadData = async () => {
             setLoading(true);
             try {
                 const allJobs = await api.fetchJobs();
-                setJobs(allJobs);
+                if (isMounted) setJobs(allJobs);
             } catch (error) {
                 console.error("Failed to load jobs:", error);
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         };
         loadData();
+        return () => { isMounted = false; };
     }, []);
 
     useEffect(() => {
@@ -364,7 +345,7 @@ const PublicJobListPage: React.FC = () => {
         return jobsForPage;
     }, [filteredJobs, currentPage, showAllOnFirstPage, user]);
 
-    const content = (
+    return (
         <>
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-brand-text-primary mb-2">Найти заказы</h1>
@@ -457,16 +438,46 @@ const PublicJobListPage: React.FC = () => {
             )}
         </>
     );
+}
+
+const PublicJobListPage: React.FC = () => {
+    const { user, loading: authLoading } = useAuth();
 
     if (authLoading) {
          return <div className="flex items-center justify-center h-screen bg-brand-background text-brand-text-primary">Загрузка...</div>;
     }
 
     if (user) {
-        return <DashboardLayoutWrapper>{content}</DashboardLayoutWrapper>;
+        // Authenticated View (Contractor or Client on home page)
+        // Ensure strictly separate layout to prevent hooks conflicts or re-render issues
+        return (
+            <div className="flex h-screen bg-brand-background text-brand-text-primary">
+                <Sidebar />
+                <div className="flex-1 flex flex-col overflow-hidden">
+                    <Header />
+                    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-brand-background p-6">
+                        <div className="container mx-auto">
+                            <JobListContent />
+                        </div>
+                    </main>
+                </div>
+            </div>
+        );
     }
 
-    return <PublicLayoutWrapper>{content}</PublicLayoutWrapper>;
+    // Guest View
+    return (
+        <div className="flex flex-col min-h-screen bg-brand-background text-brand-text-primary">
+            <Header />
+            <div className="container mx-auto flex flex-1 px-4 py-6">
+                <PublicSidebar />
+                <main className="flex-1 lg:pl-6 w-full lg:w-auto">
+                    <JobListContent />
+                </main>
+            </div>
+            <Footer />
+        </div>
+    );
 };
 
 export default PublicJobListPage;

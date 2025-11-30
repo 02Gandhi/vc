@@ -1,11 +1,9 @@
+
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { UserRole } from '../../types';
-
-const LOGO_FULL_URL = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyMDAgNDAiPgogIDxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iNDAiIGZpbGw9IiNGOTczMTYiLz4KICA8dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiPlN1YnBvcnRhbDwvdGV4dD4KPC9zdmc+";
-const LOGO_ICON_URL = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZHRoPSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj4KICA8cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSI4IiBmaWxsPSIjRjk3MzE2Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5TPC90ZXh0Pgo8L3N2Zz4=";
-
+import Logo from '../Logo';
 
 interface SidebarProps {
     isCollapsed?: boolean;
@@ -43,8 +41,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed: initialIsCollapsed = fal
 
     return (
          <aside className={`bg-brand-surface border-r border-brand-border flex flex-col transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
-            <div className="flex items-center justify-center h-16 border-b border-brand-border flex-shrink-0">
-                <img src={isCollapsed ? LOGO_ICON_URL : LOGO_FULL_URL} alt="Subportal Logo" className={`${isCollapsed ? 'h-8 w-8' : 'h-10 w-auto'}`} />
+            <div className="flex items-center justify-center h-20 border-b border-brand-border flex-shrink-0">
+                <Logo showText={!isCollapsed} />
             </div>
 
             <nav className="flex-1 overflow-y-auto overflow-x-hidden">
@@ -56,10 +54,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed: initialIsCollapsed = fal
                                 end
                                 className={({ isActive }) => `flex items-center font-medium px-6 py-3 transition-colors duration-200 ${isActive ? activeClassName : inactiveClassName}`}
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={link.icon} />
                                 </svg>
-                                {!isCollapsed && <span className="ml-4">{link.text}</span>}
+                                {!isCollapsed && <span className="ml-4 truncate">{link.text}</span>}
                             </NavLink>
                         </li>
                     ))}
@@ -71,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed: initialIsCollapsed = fal
                     onClick={handleLogout}
                     className={`flex items-center w-full font-medium py-2 rounded-md transition-colors duration-200 ${inactiveClassName} ${isCollapsed ? 'justify-center' : ''}`}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                     {!isCollapsed && <span className="ml-4">Выйти</span>}
